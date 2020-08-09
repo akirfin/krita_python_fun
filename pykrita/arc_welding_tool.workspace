@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type = Service
+ServiceTypes = Krita/PythonPlugin
+X-KDE-Library = arc_welding_tool
+X-Python-2-Compatible = false
+X-Krita-Manual = readme.md
+Name = Arc Welding Tool
+Comment = Experimental plugin
