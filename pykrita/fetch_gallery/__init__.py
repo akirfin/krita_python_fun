@@ -32,7 +32,7 @@ def register():
     Register Krita plugin.
     Add extensions & dockers to Krita.
     """
-    add_PYTHONPATH()
+    # add_PYTHONPATH()
 
     from .extension import FetchGalleryExtension
 

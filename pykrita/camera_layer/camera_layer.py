@@ -5,6 +5,12 @@ from PyQt5.QtGui import QImage
 from PyQt5.QtWidgets import QPlainTextEdit
 from PyQt5.QtMultimedia import QCameraInfo, QCamera, QCameraImageCapture
 
+from .common.utils_qt import \
+        get_enum_str
+
+from .common.utils_kis import \
+        find_document_for
+
 
 class CameraLayer(QPlainTextEdit):
     """

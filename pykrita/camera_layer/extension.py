@@ -8,6 +8,12 @@ I can see you!
 
 from krita import Krita, Extension
 
+from .common.utils_py import \
+        first, last, underscore
+
+from .common.utils_qt import \
+        walk_menu
+
 from .camera_layer import CameraLayer
 
 
@@ -39,9 +45,12 @@ class CameraLayerExtension(Extension):
         """
         create new layer, insert above active node.
         """
+        app = Krita.instance()
         document = app.activeDocument()
-        node = document.activeNode()
-        new_node = document.createNode()
+        active_node = document.activeNode()
+        parent_node = active_node.parentNode()
+        new_node = document.createNode("Camera layer", "paintlayer")
+        parent_node.addChildNode(new_node, active_node)
         # attach camera to new node
         camera_layer = CameraLayer(new_node)
         # now where to put this camera_layer ?

@@ -6,8 +6,12 @@ Small common scripts for Krita
 
 from contextlib import contextmanager
 
-From krita import Krita
+from krita import Krita, View
 
+from PyQt5.QtGui import QImage
+
+from .utils_py import \
+    first, last
 
 def walk_nodes(nodes, depth_first=True):
     """
@@ -96,8 +100,8 @@ def keep_active_node(new_node=None):
 
 def create_document_from_qimage(
                     qimage,
-                    add_view=None,
                     name=None,
+                    add_view=None,
                     width=None,
                     height=None,
                     color_mode=None,
@@ -112,33 +116,37 @@ def create_document_from_qimage(
     """
     if qimage.isNull():
         return  # None document for Null image!
-    name = qimage.objectName() if name is None else name
+    if name is None:
+        raise RuntimeError("Name must be given.")
     width = qimage.width() if width is None else width
     height = qimage.height() if height is None else height
-    color_mode = qimage.color_mode() if color_mode is None else color_mode
-    color_depth = qimage.color_depth() if color_depth is None else color_depth
-    color_profile = qimage.color_profile() if color_profile is None else color_profile
-    dpi = qimage.dpiX() if dpi is None else dpi
+    # ToDo: solve new documents colorMode & colorDepth from QImage.pixelFormat()
+    color_mode = "RGBA"  # qimage.color_mode() if color_mode is None else color_mode
+    color_depth = "U8"  # qimage.color_depth() if color_depth is None else color_depth
+    color_profile = ""  # qimage.color_profile() if color_profile is None else color_profile
+    dpi = 72.0  # qimage.dpiX() if dpi is None else dpi
     app = Krita.instance()
 
     document = app.createDocument(
-            name,
             width,
             height,
+            name,
             color_mode,
             color_depth,
             color_profile,
             dpi)
 
     first_node = first(document.topLevelNodes())
-    node = pull_node_data_from_qimage(first_node, qimage)
+    push_qimage_data_to_node(qimage, first_node)
+    first_node.setOpacity(255)
+    document.refreshProjection()
 
     if isinstance(add_view, View):
         # use given view
         view.setDocument(document)
     elif add_view:
         # not a view, but True, create new view
-        app.addView(document)
+        app.activeWindow().addView(document)
     return document
 
 
@@ -149,13 +157,16 @@ def create_node_from_qimage(document, qimage, name=None):
     """
     if qimage.isNull():
         return  # None Node for Null image!
-    name = qimage.objectName() if name is None else name
+    if name is None:
+        raise RuntimeError("Name must be given.")
     node = document.createNode(name, paintlayer)
-    pull_node_data_from_qimage(node, qimage)
+    push_qimage_data_to_node(qimage, node)
+    node.setOpacity(255)
+    document.refreshProjection()
     return node
 
 
-def pull_node_data_from_qimage(node, qimage, x=None, y=None, width=None, height=None):
+def push_qimage_data_to_node(qimage, node, x=None, y=None, width=None, height=None):
     """
     Try to convert QImage data to Node data.
     """
@@ -167,13 +178,14 @@ def pull_node_data_from_qimage(node, qimage, x=None, y=None, width=None, height=
     y = 0 if y is None else y
     width = qimage.width() if width is None else width
     height = qimage.height() if height is None else height
-    color_mode = qimage.color_mode()
-    color_depth = qimage.color_depth()
-    color_profile = qimage.color_profile()
-    dpi = qimage.dpiX()
+    # color_mode = qimage.color_mode()
+    # color_depth = qimage.color_depth()
+    # color_profile = qimage.color_profile()
+    dpi = qimage.logicalDpiX()
 
     app = Krita.instance()
     if not qimage.isNull():
+        # ToDo: convert qimage to match document.colorMode & colorDepth
         qimage.convertToFormat(QImage.Format_RGBA8888)
         ptr = qimage.constBits()
         ptr.setsize(qimage.byteCount())

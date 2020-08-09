@@ -38,4 +38,4 @@ Custom layer node that pulls pixels from camera.
 
 ## fetch_gallery
 Fetch image data from url to QImage,
-and then push Qimage to layer node.
+and then push QImage to layer node.
