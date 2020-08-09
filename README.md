@@ -17,9 +17,13 @@ change line in ./bin/install_plugins_and_start_krita.py
 krita_app_path = r"<path to krita.exe or something similar>"
 ```
 then run install_plugins_and_start_krita.py using python.
+
 (works nice when editing code & testing in Krita (my dev folder is elsewhere...))
-(Krita should have some enviroment variable for plugins folders like
-`KRITA_PLUGINS_PATH="/path/myplugins/:/more/plugins:/pushing/it"`)
+
+(Krita really should have some enviroment variable for plugins folders like
+`KRITA_PLUGINS_PATH="/path/myplugins/:/more/plugins:/pushing/it"`,
+pleeease, cherry on top!)
+
 
 ## arc_welding_tool
 How to add new tool to Krita.
