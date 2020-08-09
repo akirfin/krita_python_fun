@@ -2,11 +2,18 @@ import math
 from random import random
 from contextlib import contextmanager
 
+from PyQt5.QtGui import QPainter, QVector2D, QColor
+
+from .particle import Particle
+from .spawner import Spawner
+
+
 class Cloud(object):
     """
     Cloud of Particles, a particle cloud?
     Particle count should remain fixed. (some are just corpses...)
     """
+
     decay = 0.997  # some energy is lost
     gravity = QVector2D(0.0, 0.05)
 
@@ -16,15 +23,18 @@ class Cloud(object):
         self.particles = [Particle() for _ in range(max_particles)]
         self.alive_count = 0
 
+
     def simulate(self, delta_time):
         self.time_to_be_born(delta_time)
         self.time_to_live(delta_time)
         self.time_to_die(delta_time)
 
+
     def time_to_be_born(self, delta_time):
         for spawner in self.spawners:
             spawn_count = spawner.spawn(self.particles[self.alive_count:], delta_time)
             self.alive_count += spawn_count
+
 
     def time_to_live(self, delta_time):
         # for force in self.forces:
@@ -34,6 +44,7 @@ class Cloud(object):
             p.position += p.velocity
             p.color.setAlphaF(0.2 * (p.lifespan / 500.0))  # nice alpha decay...
             p.lifespan -= delta_time
+
 
     def time_to_die(self, delta_time):
         """

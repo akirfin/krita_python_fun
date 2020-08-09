@@ -2,6 +2,9 @@ import math
 from random import random
 from contextlib import contextmanager
 
+from PyQt5.QtGui import QPainter, QVector2D, QColor
+
+
 class Spawner(object):
     """
     Spawns new particles to cloud.
@@ -9,6 +12,7 @@ class Spawner(object):
     New particles are NOT created, instead corpses
     of dead particles are reanimated. (trying to be GC friendly)
     """
+
     spawn_rate = 2.0  #  particles / msec
     spawn_position = QVector2D()
     spawn_velocity = QVector2D()

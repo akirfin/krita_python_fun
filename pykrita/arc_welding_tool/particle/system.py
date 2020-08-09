@@ -8,22 +8,26 @@ from PyQt5.QtGui import QPainter, QVector2D, QColor, QPen, QCursor
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtMultimedia import QSoundEffect
 
+from .cloud import Cloud
 
-class ParticleSystem(QWidget):
+
+class System(QWidget):
     """
     Actual widget that contains clouds.
     Updates spawner(s) and draws cloud(s) particles.
     """
+
     fps = int(1000 / 30)  # 30fps
 
     def __init__(self, parent=None):
-        super(ParticleSystem, self).__init__(parent=parent)
+        super(System, self).__init__(parent=parent)
         self._clouds = [Cloud(10000)]  # just one cloud.
         self._last_time = QDateTime.currentMSecsSinceEpoch()
         self._last_positions = [QVector2D() for _ in range(20)]
         self.setMouseTracking(True)
         self.create_ui()
         self.startTimer(self.fps)
+
 
     def create_ui(self):
         file_path = QUrl.fromLocalFile("D:/projects/krita_docker_shortcuts/pykrita/docker_shortcuts/arc_welding.wav")
@@ -32,6 +36,7 @@ class ParticleSystem(QWidget):
         self._welding_sound.setLoopCount(QSoundEffect.Infinite)
         self._welding_sound.setVolume(0.0)
         self._welding_sound.play()
+
 
     def mouseMoveEvent(self, event):
         """
@@ -54,7 +59,8 @@ class ParticleSystem(QWidget):
                 spawner.spawn_rate = spawn_rate * 2.3
                 spawner.spawn_position = position
                 spawner.spawn_velocity = velocity
-        return super(ParticleSystem, self).mouseMoveEvent(event)
+        return super(System, self).mouseMoveEvent(event)
+
 
     def paintEvent(self, event):
         """
@@ -75,6 +81,7 @@ class ParticleSystem(QWidget):
                     p2 = p1 - p.velocity
                     painter.drawLine(p1.toPointF(), p2.toPointF())
 
+
     def timerEvent(self, event):
         """
         Calculate delta time.
@@ -87,3 +94,4 @@ class ParticleSystem(QWidget):
         for cloud in self._clouds:
             cloud.simulate(delta_time)
         self.update()
+        return super(System, self).timerEvent(event)

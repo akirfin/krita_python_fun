@@ -8,8 +8,7 @@ Arc Welding! (now we're cooking with GAS)
 
 from krita import Krita, Extension
 
-import particle
-
+from . import particle
 
 
 class ArcWeldingToolExtension(Extension):
@@ -18,8 +17,8 @@ class ArcWeldingToolExtension(Extension):
     (this NOT official way to add new tools.)
     """
 
-    def __init__(self):
-        super(ArcWeldingToolExtension, self).__init__()
+    def __init__(self, parent):
+        super(ArcWeldingToolExtension, self).__init__(parent)
 
 
     def setup(self):
