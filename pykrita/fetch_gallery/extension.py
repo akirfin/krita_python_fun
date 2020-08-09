@@ -1,5 +1,7 @@
 """
-Let’s have some fun with python coding 02
+
+Let’s have some fun with python coding 01
+
 """
 
 import re
@@ -10,12 +12,18 @@ from krita import Krita, Extension
 from PyQt5.QtGui import QImage
 
 
-class FetchGallery(Extension):
+class FetchGalleryExtension(Extension):
+    url = "https://krita-artists.org/tag/featured"
+    image_element_re = re.compile(r"<meta itemprop='image' content='(https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg)'>")
+    limit = 8
+
     def __init__(self, parent):
-        super(LetsHaveFun01, self).__init__(parent)
+        super(FetchGalleryExtension, self).__init__(parent)
+
 
     def setup(self):
         pass
+
 
     def createActions(self, window):
         prefix = self.objectName()
@@ -24,29 +32,14 @@ class FetchGallery(Extension):
 
 
     def act_fetch_gallery(self, cheched=None):
-        image_element_re = re.compile(r"<meta itemprop='image' content='https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg'>")
-        url = "https://krita-artists.org/tag/featured"
-
-        r = request.urlopen(url)
+        r = request.urlopen(self.url)
         text = r.read().decode('utf-8')
-        for index, meta_str in enumerate(image_element_re.findall(text)):
-            qimage = get_qimage_from_url(meta_str[32:-2])  # crop url from string
-            set_node_pixel_data(node, qimage)
-            if index > 8:
-                return  # limit to 8 first images
+        for index, image_url in enumerate(self.image_element_re.findall(text)):
+            qimage = get_qimage_from_url(image_url)
+            create_document_from_qimage(qimage)
+            if index >= self.limit:
+                return  # limit reached!
 
-
-
-
-def get_qimage_from_url(image_url):
-    app = Krita.instance()
-    name = image_url.rsplit("/", 1)[-1]  # strip path
-    name = name.split(".", 1)[0]  # strip ext
-    r = request.urlopen(image_url)
-    if r.getcode() == 200:
-        image = QImage()
-        image.loadFromData(r.read())
-        return qimage_to_document(image, name)
 
 
 def qimage_to_document(qimage, name=""):
@@ -67,14 +60,3 @@ def qimage_to_document(qimage, name=""):
         node.setOpacity(255)
         document.refreshProjection()
         return document
-
-
-def get_images_from_gallery():
-    image_element_re = re.compile(r"<meta itemprop='image' content='https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg'>")
-    url = "https://krita-artists.org/tag/featured"
-    r = request.urlopen(url)
-    text = r.read().decode('utf-8')
-    for index, meta_str in enumerate(image_element_re.findall(text)):
-        get_qimage_from_url(meta_str[32:-2])  # crop url from string
-        if index > 8:
-            return  # limit to 8 first images
