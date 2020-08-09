@@ -34,12 +34,15 @@ class FetchGalleryExtension(Extension):
 
 
     def createActions(self, window):
-        menubar = window.qwindow().menuBar()
-        first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
+        # menubar = window.qwindow().menuBar()
+        # first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
 
-        fetch_gallery_action = first_tools.menu().addAction("Fetch Gallery")
-        fetch_gallery_action.setObjectName("create_camera_layer")
+        # fetch_gallery_action = first_tools.menu().addAction("Fetch Gallery")
+        # fetch_gallery_action.setObjectName("fetch_gallery")
+        # fetch_gallery_action.triggered.connect(self.act_fetch_gallery)
+        fetch_gallery_action = window.createAction("fetch_gallery", "Fetch Gallery")
         fetch_gallery_action.triggered.connect(self.act_fetch_gallery)
+
 
 
     def act_fetch_gallery(self, cheched=None):

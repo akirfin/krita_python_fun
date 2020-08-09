@@ -36,13 +36,14 @@ class ArcWeldingToolExtension(Extension):
     def createActions(self, window):
         # self._arc_welding_tool_context = particle.System()
 
-        menubar = window.qwindow().menuBar()
-        first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
+        # menubar = window.qwindow().menuBar()
+        # first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
 
-        activate_arc_welding_action = first_tools.menu().addAction("Activate Arc Welding")
-        activate_arc_welding_action.setObjectName("activate_arc_welding")
+        # activate_arc_welding_action = first_tools.menu().addAction("Activate Arc Welding")
+        # activate_arc_welding_action.setObjectName("activate_arc_welding")
+        # activate_arc_welding_action.triggered.connect(self.act_activate_arc_welding)
+        activate_arc_welding_action = window.createAction("activate_arc_welding", "Activate Arc Welding")
         activate_arc_welding_action.triggered.connect(self.act_activate_arc_welding)
-
 
     def act_activate_arc_welding(self, checked=None):
         """

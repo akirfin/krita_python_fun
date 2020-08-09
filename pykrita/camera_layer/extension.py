@@ -33,11 +33,13 @@ class CameraLayerExtension(Extension):
 
 
     def createActions(self, window):
-        menubar = window.qwindow().menuBar()
-        first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
+        # menubar = window.qwindow().menuBar()
+        # first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
 
-        create_camera_layer_action = first_tools.menu().addAction("Create camera layer")
-        create_camera_layer_action.setObjectName("create_camera_layer")
+        # create_camera_layer_action = first_tools.menu().addAction("Create camera layer")
+        # create_camera_layer_action.setObjectName("create_camera_layer")
+        # create_camera_layer_action.triggered.connect(self.act_create_camera_layer)
+        create_camera_layer_action = window.createAction("create_camera_layer", "Create camera layer")
         create_camera_layer_action.triggered.connect(self.act_create_camera_layer)
 
 

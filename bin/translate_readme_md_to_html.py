@@ -28,7 +28,7 @@ def translate_readme(src_md, trg_html, resources_dir=None):
 
 if __name__ == '__main__':
     print("Fix me more!, absolute paths are also bad!")
-    
+
     this_dir = os.path.dirname(sys.argv[0])
 
     pykrita_dir = os.path.join(this_dir, "..", "pykrita")

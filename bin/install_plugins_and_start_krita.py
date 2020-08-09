@@ -52,7 +52,7 @@ if __name__ == '__main__':
         trg = os.path.join(krita_resource_dir, folder)
         if os.path.isdir(trg):
             pass  # rmtree(trg)
-        copytree(src, trg)
+        # copytree(src, trg)
     for file in files:
         src = os.path.abspath(os.path.join(parent, file))
         copy2(src, krita_resource_dir)
