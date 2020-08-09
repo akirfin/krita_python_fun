@@ -7,9 +7,11 @@ Contains experimental example python plugins for Krita.
 May give some ideas how to do things.
 
 ## How to install
+```
 copy files and folders from ./pykrita to
-linux/mac: ${HOME}/.local/share/krita/pykrita
-win: ${HOME}\AppData\Roaming\krita\pykrita
+  linux/mac:  ${HOME}/.local/share/krita/pykrita
+  win:        ${HOME}\AppData\Roaming\krita\pykrita
+```
 
 or
 
