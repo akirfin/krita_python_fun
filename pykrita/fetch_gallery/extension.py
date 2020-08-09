@@ -24,9 +24,12 @@ class FetchGalleryExtension(Extension):
 
 
     def createActions(self, window):
-        prefix = self.objectName()
-        fetch_gallery = window.createAction(prefix +"_fetch_gallery", "Fetch Gallery", "")
-        fetch_gallery.triggered.connect(self.act_fetch_gallery)
+        menubar = window.qwindow().menuBar()
+        first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
+
+        fetch_gallery_action = first_tools.menu().addAction("Fetch Gallery")
+        fetch_gallery_action.setObjectName("create_camera_layer")
+        fetch_gallery_action.triggered.connect(self.act_fetch_gallery)
 
 
     def act_fetch_gallery(self, cheched=None):
@@ -37,24 +40,3 @@ class FetchGalleryExtension(Extension):
             create_document_from_qimage(qimage)
             if index >= self.limit:
                 return  # limit reached!
-
-
-
-def qimage_to_document(qimage, name=""):
-    app = Krita.instance()
-    if not qimage.isNull():
-        qimage.convertToFormat(QImage.Format_RGBA8888)
-        w = qimage.width()
-        h = qimage.height()
-
-        document = app.createDocument(w, h, name, "RGBA", "U8", "", 72.0)
-        app.activeWindow().addView(document)
-
-        node = document.topLevelNodes()[0]
-
-        ptr = qimage.constBits()
-        ptr.setsize(qimage.byteCount())
-        node.setPixelData(bytes(ptr.asarray()), 0, 0, w, h)
-        node.setOpacity(255)
-        document.refreshProjection()
-        return document

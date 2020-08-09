@@ -8,6 +8,9 @@ from PyQt5.QtGui import QPainter, QVector2D, QColor, QPen, QCursor
 from PyQt5.QtWidgets import QWidget
 from PyQt5.QtMultimedia import QSoundEffect
 
+from arc_welding_tool.common.utils_qt import \
+        create_painter, keep_painter
+
 from .cloud import Cloud
 
 

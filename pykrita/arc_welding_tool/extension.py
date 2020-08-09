@@ -8,6 +8,12 @@ Arc Welding! (now we're cooking with GAS)
 
 from krita import Krita, Extension
 
+from .common.utils_py import\
+        first
+
+from .common.utils_qt import\
+        walk_menu
+
 from . import particle
 
 
@@ -27,12 +33,17 @@ class ArcWeldingToolExtension(Extension):
 
     def createActions(self, window):
         self._arc_welding_tool_context = particle.System()
-        activate_arc_welding_action = create_action(window, "activate_arc_welding", "Activate Arc Welding", "menu/path")
-        activate_arc_welding_action.trigger(self.act_activate_arc_welding)
+
+        menubar = window.qwindow().menuBar()
+        first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
+        
+        activate_arc_welding_action = first_tools.menu().addAction("Activate Arc Welding")
+        activate_arc_welding_action.setObjectName("activate_arc_welding")
+        activate_arc_welding_action.triggered.connect(self.act_activate_arc_welding)
 
 
     def act_activate_arc_welding(self, checked=None):
         """
         activate arc welding tool.
         """
-        self._tool_context.show()
+        self._arc_welding_tool_context.show()
