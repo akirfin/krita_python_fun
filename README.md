@@ -9,7 +9,9 @@ May give some ideas how to do things.
 ## How to install
 copy files and folders from ./pykrita to <your home folder>/krita/pykrita.
 
-or change line in ./bin/install_plugins_and_start_krita.py
+or
+
+change line in ./bin/install_plugins_and_start_krita.py
 ```python
 # Change this to something that starts up Krita
 krita_app_path = r"<path to krita.exe or something similar>"
