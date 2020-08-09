@@ -7,7 +7,7 @@ Contains experimental example python plugins for Krita.
 May give some ideas how to do things.
 
 ## How to install
-copy files and folders from ./pykrita to <your home folder>/krita/pykrita.
+copy files and folders from ./pykrita to ${your home folder}/krita/pykrita.
 
 or
 
