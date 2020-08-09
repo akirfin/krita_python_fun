@@ -21,12 +21,14 @@ def translate_readme(src_md, trg_html, resources_dir=None):
         html = markdown(src.read())
         if resources_dir:
             html = html.replace('alt="title_image"', 'alt="title_image" width="512" height="109"')
-            html = html.replace("./resources/", resources_dir)
+            # html = html.replace("./resources/", resources_dir)
         html = html.replace("?raw=true", "")
         trg.write(html)
 
 
 if __name__ == '__main__':
+    print("Fix me more!, absolute paths are also bad!")
+    
     this_dir = os.path.dirname(sys.argv[0])
 
     pykrita_dir = os.path.join(this_dir, "..", "pykrita")
