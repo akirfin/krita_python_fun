@@ -6,7 +6,8 @@ I can see you!
 
 """
 
-from krita import Krita
+from krita import Krita, Extension
+
 from .camera_layer import CameraLayer
 
 
@@ -15,7 +16,7 @@ class CameraLayerExtension(Extension):
     Add layer type to Krita.
     (this NOT official way to add layer types.)
     """
-    
+
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)
         self._camera_layers = list()

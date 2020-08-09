@@ -6,13 +6,10 @@ Arc Welding! (now we're cooking with GAS)
 
 """
 
-from krita import Krita
+from krita import Krita, Extension
 
 import particle
-        # particle.Particle
-        # particle.Cloud
-        # particle.Spawner
-        # particle.System
+
 
 
 class ArcWeldingToolExtension(Extension):

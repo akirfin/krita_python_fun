@@ -9,11 +9,9 @@ from urllib import request
 
 from krita import Krita, Extension
 
-from PyQt5.QtGui import QImage
-
 
 class FetchGalleryExtension(Extension):
-    url = "https://krita-artists.org/tag/featured"
+    gallery_url = "https://krita-artists.org/tag/featured"
     image_element_re = re.compile(r"<meta itemprop='image' content='(https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg)'>")
     limit = 8
 
@@ -32,7 +30,7 @@ class FetchGalleryExtension(Extension):
 
 
     def act_fetch_gallery(self, cheched=None):
-        r = request.urlopen(self.url)
+        r = request.urlopen(self.gallery_url)
         text = r.read().decode('utf-8')
         for index, image_url in enumerate(self.image_element_re.findall(text)):
             qimage = get_qimage_from_url(image_url)
