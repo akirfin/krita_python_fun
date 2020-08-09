@@ -33,7 +33,7 @@ class System(QWidget):
 
 
     def create_ui(self):
-        file_path = QUrl.fromLocalFile("D:/projects/krita_docker_shortcuts/pykrita/docker_shortcuts/arc_welding.wav")
+        file_path = QUrl.fromLocalFile("./arc_welding.wav")
         self._welding_sound = QSoundEffect()
         self._welding_sound.setSource(file_path)
         self._welding_sound.setLoopCount(QSoundEffect.Infinite)
