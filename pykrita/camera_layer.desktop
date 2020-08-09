@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type = Service
 ServiceTypes = Krita/PythonPlugin
-X-KDE-Library = arc_welding_tool
+X-KDE-Library = camera_layer
 X-Python-2-Compatible = false
-X-Krita-Manual = readme.md
-Name = Arc Welding Tool
+X-Krita-Manual = readme.html
+Name = Camera Layer
 Comment = Experimental plugin

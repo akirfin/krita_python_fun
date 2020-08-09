@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type = Service
 ServiceTypes = Krita/PythonPlugin
-X-KDE-Library = fetch_gallery
+X-KDE-Library = arc_welding_tool
 X-Python-2-Compatible = false
-X-Krita-Manual = readme.md
-Name = Fetch Krita gallery
+X-Krita-Manual = readme.html
+Name = Arc Welding Tool
 Comment = Experimental plugin

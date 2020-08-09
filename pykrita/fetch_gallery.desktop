@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type = Service
 ServiceTypes = Krita/PythonPlugin
-X-KDE-Library = camera_layer
+X-KDE-Library = fetch_gallery
 X-Python-2-Compatible = false
-X-Krita-Manual = readme.md
-Name = Camera Layer
+X-Krita-Manual = readme.html
+Name = Fetch Krita gallery
 Comment = Experimental plugin
