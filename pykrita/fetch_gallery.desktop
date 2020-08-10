@@ -3,6 +3,6 @@ Type = Service
 ServiceTypes = Krita/PythonPlugin
 X-KDE-Library = fetch_gallery
 X-Python-2-Compatible = false
-X-Krita-Manual = readme.html
+X-Krita-Manual = readme.md
 Name = Fetch Krita gallery
 Comment = Experimental plugin

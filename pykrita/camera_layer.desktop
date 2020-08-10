@@ -3,6 +3,6 @@ Type = Service
 ServiceTypes = Krita/PythonPlugin
 X-KDE-Library = camera_layer
 X-Python-2-Compatible = false
-X-Krita-Manual = readme.html
+X-Krita-Manual = readme.md
 Name = Camera Layer
 Comment = Experimental plugin
