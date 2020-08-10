@@ -18,7 +18,7 @@ def get_krita_resource_dir():
     platform_dirs = [
             ('linux',  "~/.local/share/krita/pykrita"),
             ('darwin', "~/.local/share/krita/pykrita"),
-            ('win32',  "~\AppData\Roaming\krita\pykrita")]
+            ('win32',  r"~\AppData\Roaming\krita\pykrita")]
     for prefix, dir in platform_dirs:
         if sys.platform.startswith(prefix):
             return os.path.expanduser(dir)
