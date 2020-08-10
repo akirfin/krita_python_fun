@@ -51,10 +51,10 @@ if __name__ == "__main__":
         src = os.path.abspath(os.path.join(parent, folder))
         trg = os.path.join(krita_resource_dir, folder)
         if os.path.isdir(trg):
-            pass  # rmtree(trg)
-        # copytree(src, trg)
+            rmtree(trg)
+        copytree(src, trg)
     for file in files:
         src = os.path.abspath(os.path.join(parent, file))
-        # copy2(src, krita_resource_dir)
+        copy2(src, krita_resource_dir)
 
     run_krita()

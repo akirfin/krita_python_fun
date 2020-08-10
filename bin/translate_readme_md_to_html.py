@@ -30,7 +30,7 @@ def translate_readme(src_md, trg_html, resources_dir=None):
               <body>
                 {put_translated_here}
                 # embed all images!!!
-                <img style='display:block; width:100px;height:100px;' id='base64image'                 
+                <img style='display:block; width:100px;height:100px;' id='base64image'
                    src='data:image/jpeg;base64, LzlqLzRBQ...<!-- base64 data -->' />
 
               </body>
