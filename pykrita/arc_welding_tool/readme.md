@@ -1,6 +1,11 @@
-## Arc Welding Tool
-![title_image](./resources/title_image.jpg?raw=true "Title")
+<html>
+<h2>Arc Welding Tool</h2>
 
-Experimental Plugin
+<p><img src="./resources/title_image.jpg" alt="title_image" width="512" height="109" title="Title" /></p>
 
-* version: 0.0.1 pre-alpha
+<p>Experimental Plugin</p>
+
+<ul>
+<li>version: 0.0.1 pre-alpha</li>
+</ul>
+</html>
