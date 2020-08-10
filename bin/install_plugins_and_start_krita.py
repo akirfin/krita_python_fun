@@ -16,13 +16,13 @@ krita_app_path = r"D:\Program Files\Krita (x64)\bin\krita.exe"
 
 def get_krita_resource_dir():
     platform_dirs = [
-            ('linux',  "~/.local/share/krita/pykrita"),
-            ('darwin', "~/.local/share/krita/pykrita"),
-            ('win32',  r"~\AppData\Roaming\krita\pykrita")]
+            ("linux",  r"~/.local/share/krita/pykrita"),
+            ("darwin", r"~/.local/share/krita/pykrita"),
+            ("win32",  r"~\AppData\Roaming\krita\pykrita")]
     for prefix, dir in platform_dirs:
         if sys.platform.startswith(prefix):
             return os.path.expanduser(dir)
-    raise RuntimeError('Not supported platform, Krita resource dir can NOT be solved. (platform: {sys.platform!r})'.format(**locals()))
+    raise RuntimeError("Not supported platform, Krita resource dir can NOT be solved. (platform: {sys.platform!r})".format(**locals()))
 
 
 def run_krita():
@@ -32,15 +32,15 @@ def run_krita():
     process = Popen(krita_app_path, stdout=PIPE)
     while process.poll() is None:
         data = process.stdout.readline()
-        sys.stdout.write(data.decode('utf-8'))
+        sys.stdout.write(data.decode("utf-8"))
         sys.stdout.flush()
     # read lingering data
     data = process.stdout.read()
-    sys.stdout.write(data.decode('utf-8'))
+    sys.stdout.write(data.decode("utf-8"))
     sys.stdout.flush()
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     this_dir = os.path.dirname(sys.argv[0])
 
     pykrita_dir = os.path.join(this_dir, "..", "pykrita")
@@ -55,6 +55,6 @@ if __name__ == '__main__':
         # copytree(src, trg)
     for file in files:
         src = os.path.abspath(os.path.join(parent, file))
-        copy2(src, krita_resource_dir)
+        # copy2(src, krita_resource_dir)
 
     run_krita()
