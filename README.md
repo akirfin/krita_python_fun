@@ -13,16 +13,6 @@ copy files and folders from ./pykrita to
   win:        ${HOME}\AppData\Roaming\krita\pykrita
 ```
 
-or
-
-change line in ./bin/install_plugins_and_start_krita.py
-```python
-# Change this to something that starts up Krita
-krita_app_path = r"D:\Program Files\Krita (x64)\bin\krita.exe"
-```
-then run install_plugins_and_start_krita.py using python. (works nice when editing code
-& testing in Krita (my dev folder is elsewhere...))
-
 (Krita really should have some enviroment variable for plugin folders like
 `KRITA_PLUGINS_PATH="/path/myplugins:/more/plugins:~/dev/krita_python_fun"`,
 pleeease!, cherry on top!)
