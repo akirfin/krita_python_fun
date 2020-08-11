@@ -42,20 +42,24 @@ def run_krita():
 
 if __name__ == "__main__":
     this_dir = os.path.dirname(sys.argv[0])
-
-    pykrita_dir = os.path.join(this_dir, "..", "pykrita")
     krita_resource_dir = get_krita_resource_dir()
-    parent, folders, files = next(os.walk(pykrita_dir))
 
-    for folder in folders:
-        src = os.path.abspath(os.path.join(parent, folder))
-        trg = os.path.join(krita_resource_dir, folder)
-        if os.path.isdir(trg):
-            # rmtree(trg)
-            pass
-        # copytree(src, trg)
-    for file in files:
-        src = os.path.abspath(os.path.join(parent, file))
-        # copy2(src, krita_resource_dir)
+    pykrita_src_dir = lambda entry: os.path.join(this_dir, "..", "pykrita", entry)
+    pykrita_trg_dir = lambda entry: os.path.join(krita_resource_dir, entry)
 
+    for entry in ("arc_welding_tool", "camera_layer", "fetch_gallery"):
+        src_dir = pykrita_src_dir(entry)
+        trg_dir = pykrita_trg_dir(entry)
+        if os.path.isdir(trg_dir):
+            rmtree(trg_dir)
+            print(f"rmtree({trg_dir!r})")
+        copytree(src_dir, trg_dir)
+        print(f"copytree(\n\t{src_dir!r},\n\t{trg_dir!r})")
+
+    for entry in ("arc_welding_tool.desktop", "camera_layer.desktop", "fetch_gallery.desktop"):
+        src_dsk = pykrita_src_dir(entry)
+        copy2(src_dsk, krita_resource_dir)
+        print(f"copy2(\n\t{src_dsk!r},\n\t{krita_resource_dir!r})")
+
+    print("\nrun_krita()\n")
     run_krita()

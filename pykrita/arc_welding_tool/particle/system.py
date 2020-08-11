@@ -55,7 +55,7 @@ class System(QWidget):
         self._welding_sound.setVolume(spawn_rate)
         position = QVector2D(event.windowPos())
         lpos = self._last_positions.pop(0)
-        velocity = (lpos - position)
+        velocity = (lpos - position) * 0.2
         self._last_positions.append(position)
         for cloud in self._clouds:
             for spawner in cloud.spawners:

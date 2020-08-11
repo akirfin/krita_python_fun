@@ -34,7 +34,7 @@ class ArcWeldingToolExtension(Extension):
 
 
     def createActions(self, window):
-        # self._arc_welding_tool_context = particle.System()
+        self._arc_welding_tool_context = particle.System()
 
         # menubar = window.qwindow().menuBar()
         # first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
@@ -49,5 +49,5 @@ class ArcWeldingToolExtension(Extension):
         """
         activate arc welding tool.
         """
-        # self._arc_welding_tool_context.show()
-        ok = QMessageBox.information(None, "Arc welding tool (sorry)", "Sorry, Welding tool is under construction :(")
+        self._arc_welding_tool_context.show()
+        # ok = QMessageBox.information(None, "Arc welding tool (sorry)", "Sorry, Welding tool is under construction :(")
