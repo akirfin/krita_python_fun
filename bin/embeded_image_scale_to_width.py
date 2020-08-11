@@ -15,6 +15,11 @@ def embeded_image_scale_to_width(img_path, relative_path, width):
 
 
 if __name__ == '__main__':
+    """
+    ToDo:
+    Change so that path to readme.md is given, then this adds source="..." entry.
+    - remove_use_width == remove width="" and use it as scaling for empadded image.
+    """
     img_tag = embeded_image_scale_to_width(
         r"D:\projects\krita_python_fun\pykrita\arc_welding_tool\resources\title_image.jpg",
         "./resources/title_image.jpg",
