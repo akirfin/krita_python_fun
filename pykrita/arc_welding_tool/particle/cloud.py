@@ -58,7 +58,10 @@ class Cloud(object):
             p = pc[cursor]
             if p.lifespan <= 0.0:
                 # a corpse, move to corpse pile, using swap
-                pc[lc], pc[cursor] = pc[cursor], pc[lc]
+                try:
+                    pc[lc], pc[cursor] = pc[cursor], pc[lc]
+                except IndexError as e:
+                    print("pc: {pc}, lc: {lc}, cursor: {cursor}".format(**locals()))
                 self.alive_count -= 1
                 # keep cursor index!
             else:
