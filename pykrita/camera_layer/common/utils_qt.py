@@ -11,6 +11,9 @@ from PyQt5.QtGui import \
 from PyQt5.QtWidgets import \
         QAction
 
+from .utils_py import \
+        print_console
+
 
 def get_enum_str(owner_cls, enum_cls, enum_value):
     """
@@ -37,7 +40,7 @@ def dump_qobj_tree(qobj):
             text = q.text()
         except:
             pass
-        print("{indent}objectName: \"{name}\", text: \"{text}\", cls: {cls}, meta_cls: {meta_cls}".format(**locals()))
+        print_console("{indent}objectName: \"{name}\", text: \"{text}\", cls: {cls}, meta_cls: {meta_cls}".format(**locals()))
 
 
 def dump_menu(menu):
