@@ -85,7 +85,7 @@ def keep_active_document(new_document=None):
 @contextmanager
 def keep_active_node(new_node=None):
     app = Krita.instance()
-    new_document = app.activeDocument() if new_node is None else find_node_document(new_node)
+    new_document = app.activeDocument() if new_node is None else find_document_for(new_node)
     with keep_active_document(new_document):
         old_node = get_active_node()
         try:
@@ -93,7 +93,7 @@ def keep_active_node(new_node=None):
                 new_document.setActiveNode(new_node)
             yield get_active_node()
         finally:
-            document = find_node_document(old_node)
+            document = find_document_for(old_node)
             if document is not None:
                 document.setActiveNode(old_node)
 

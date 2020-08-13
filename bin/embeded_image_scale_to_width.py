@@ -13,6 +13,10 @@ def embeded_image_scale_to_width(img_path, relative_path, width):
     base64_data = data.toBase64().data().decode('ascii')
     return _img_template.format(**locals())
 
+def embed_images(filepath):
+    xml = QDomDocument()
+    for node in xml.findTags("img"):
+        node.
 
 if __name__ == '__main__':
     """

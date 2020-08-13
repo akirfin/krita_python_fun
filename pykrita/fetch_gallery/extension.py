@@ -44,7 +44,6 @@ class FetchGalleryExtension(Extension):
         fetch_gallery_action.triggered.connect(self.act_fetch_gallery)
 
 
-
     def act_fetch_gallery(self, cheched=None):
         r = request.urlopen(self.gallery_url)
         text = r.read().decode('utf-8')

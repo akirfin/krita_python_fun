@@ -27,7 +27,7 @@ def dump_qobj_tree(qobj):
     """
     Dump QObject hierarchy.
     """
-    for q, depth in walk(qobj):
+    for q, depth in walk_qobjects([qobj]):
         indent = "    " * depth
         name = q.objectName()
         cls = type(q).__name__

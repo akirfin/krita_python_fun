@@ -63,6 +63,10 @@ def int_floor(x):
     return int(math.floor(x))
 
 
+def str_cast(obj):
+    return u"" if obj is None else UnicodeType(obj)
+
+
 def mix(a, b, ratio):
     r = float(ratio)
     return (1.0 - r) * float(a) + r * float(b)
