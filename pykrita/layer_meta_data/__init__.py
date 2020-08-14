@@ -46,7 +46,6 @@ def register():
         LayerPropertiesHook.register()
 
 
-
 def unregister():
     """
     Not supported by Krita :.(

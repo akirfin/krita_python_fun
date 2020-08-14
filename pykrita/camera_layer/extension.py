@@ -8,14 +8,14 @@ I can see you!
 
 from krita import Krita, Extension
 
-from .common.utils_py import \
+from camera_layer.common.utils_py import \
         first, last, underscore
 
-from .common.utils_qt import \
+from camera_layer.common.utils_qt import \
         walk_menu
 
-from .function_sets.camera_layer_FS import \
-        CameraLayerFS
+from camera_layer.nodes.camera_layer import \
+        CameraLayer
 
 
 class CameraLayerExtension(Extension):
@@ -26,11 +26,11 @@ class CameraLayerExtension(Extension):
 
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)
-
+        self._node_camera_layers = list()  # [(node, camera_layer), ...]
 
     def setup(self):
         pass
-
+1536 x 328
 
     def createActions(self, window):
         # menubar = window.qwindow().menuBar()
@@ -54,5 +54,4 @@ class CameraLayerExtension(Extension):
         new_node = document.createNode("Camera layer", "paintlayer")
         parent_node.addChildNode(new_node, active_node)
         # attach camera to new node
-        camera = CameraLayerFS(new_node)
-        # now where to put this camera_layer ?
+        camera = CameraLayer(new_node)

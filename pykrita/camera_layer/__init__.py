@@ -46,15 +46,19 @@ def register():
     # add_PYTHONPATH()
     load_plugins()
 
-    from .extension import CameraLayerExtension
+    from camera_layer.extension import \
+            CameraLayerExtension
+    from camera_layer.data_types.camera_layer_data import \
+            CameraLayerData
+    from camera_layer.ui.camera_layer_widget import \
+            CameraLayerWidget
     from layer_meta_data.ui.widget_mapper import \
             widget_mapper
-    from .data_types.camera_layer_data import \
-            CameraLayerData
-    from .ui.camera_layer_widget import \
-            CameraLayerWidget
 
-    widget_mapper.register(CameraLayerData, CameraLayerWidget)
+    widget_mapper.register(
+            CameraLayerData,
+            from_data=lambda node, data: CameraLayerWidget(CameraLayer(node, data)),
+            to_data=lambda camera_layer_widget: camera_layer_widget.data)
 
     app = Krita.instance()
     app.addExtension(CameraLayerExtension(app))

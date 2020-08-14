@@ -43,6 +43,9 @@ class WidgetMapper(object):
         self._registry[data_type] = widget_type
 
     def create_widget(self, obj):
+        """
+        ToDo: Convert to non-recursive!
+        """
         data_type = type(obj)
         if data_type in self._registry:
             widget_type = self._registry[data_type]

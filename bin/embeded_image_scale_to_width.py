@@ -16,7 +16,7 @@ def embeded_image_scale_to_width(img_path, relative_path, width):
 def embed_images(filepath):
     xml = QDomDocument()
     for node in xml.findTags("img"):
-        node.
+        pass
 
 if __name__ == '__main__':
     """
@@ -24,20 +24,26 @@ if __name__ == '__main__':
     Change so that path to readme.md is given, then this adds source="..." entry.
     - remove_use_width == remove width="" and use it as scaling for empadded image.
     """
-    img_tag = embeded_image_scale_to_width(
-        r"D:\projects\krita_python_fun\pykrita\arc_welding_tool\resources\title_image.jpg",
-        "./resources/title_image.jpg",
-        577)
+    #img_tag = embeded_image_scale_to_width(
+    #    r"D:\projects\krita_python_fun\pykrita\arc_welding_tool\resources\title_image.jpg",
+    #    "./resources/title_image.jpg",
+    #    577)
+    # print(img_tag)
+
+    #img_tag = embeded_image_scale_to_width(
+    #    r"D:\projects\krita_python_fun\pykrita\camera_layer\resources\title_image.jpg",
+    #    "./resources/title_image.jpg",
+    #    577)
+    # print(img_tag)
+
+    #img_tag = embeded_image_scale_to_width(
+    #    r"D:\projects\krita_python_fun\pykrita\fetch_gallery\resources\title_image.jpg",
+    #    "./resources/title_image.jpg",
+    #    577)
     # print(img_tag)
 
     img_tag = embeded_image_scale_to_width(
-        r"D:\projects\krita_python_fun\pykrita\camera_layer\resources\title_image.jpg",
+        r"D:\projects\krita_python_fun\pykrita\layer_meta_data\resources\title_image.jpg",
         "./resources/title_image.jpg",
         577)
-    # print(img_tag)
-
-    img_tag = embeded_image_scale_to_width(
-        r"D:\projects\krita_python_fun\pykrita\fetch_gallery\resources\title_image.jpg",
-        "./resources/title_image.jpg",
-        577)
-    # print(img_tag)
+    print(img_tag)

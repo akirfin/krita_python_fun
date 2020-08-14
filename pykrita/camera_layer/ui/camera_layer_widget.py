@@ -16,14 +16,17 @@ from camera_layer.common.utils_qt import \
 from camera_layer.common.utils_kis import \
         find_document_for
 
+from camera_layer.nodes.camera_layer import \
+        CameraLayer
+
 from camera_layer.data_types.camera_layer_data import \
         CameraLayerData
 
 
 class CameraLayerWidget(QWidget):
-    def __init__(self, parent=None):
-        super(NoneWidget, self).__init__("None", parent=parent)
-        self._camera = CameraLayerFS()
+    def __init__(self, camera_layer, parent=None):
+        super(CameraLayerWidget, self).__init__("None", parent=parent)
+        self._camera_layer = camera_layer
         self.create_ui()
 
 
@@ -43,36 +46,36 @@ class CameraLayerWidget(QWidget):
         self._capture = QPushButton("Capture")  # toggle/click button with red dot
         layout.addRow(self._capture)
 
+        self._camera_layer.data_changed.connect(self.on_camera_layer_data_changed)
+
+
+    def get_camera_layer(self):
+        return self._camera_layer
+
+
+    def set_camera_layer(self, new_camera_layer):
+        self._camera_layer = new_camera_layer
+
 
     def get_data(self):
-        return CameraLayerData(
-                camera_id=self._camera_id.selectedText(),
-                mode=self._mode.selectedText(),
-                transform=self._transform.data)
+        return self._camera_layer.data
 
 
     QSlot(CameraLayerData)  # non-QObject?
     def set_data(self, new_data):
-        new_data = CameraLayerData.cast(new_data)
-        old_data = self.get_data()
-        if new_data != old_data:
-            self._camera_id.setSelectedText(new_data.camera_id)
-            self._mode.setSelectedText(new_data.mode)
-            self._transform.data = new_data.transform
-            self.data_changed.emit(self.get_data())
+        self._camera_layer.data = new_data
 
 
     data_changed = QSignal(CameraLayerData)
     data = QProperty(CameraLayerData, fget=get_data, fset=set_data, notify=data_changed, user=True)
 
 
+    def on_camera_layer_data_changed(self, new_data):
+        self._camera_id.setText(camera_layer_data.camera_id)
+        self._mode.setText(camera_layer_data.mode)
+        self._transform.setText(camera_layer_data.transform)
+        self.data_changed.emit(new_data)
+
+
     def on_capture(self):
-        node = None
-        for anc in walk_qobject_ancestors(self):
-            if isinstance(anc, LayerMetaDataWidget):
-                node = anc.node
-                break
-        if node is not None:
-            camera = self._camera
-            camera.node = node
-            camera.capture()
+        self.camera_layer.capture()

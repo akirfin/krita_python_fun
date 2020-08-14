@@ -44,11 +44,13 @@ from .widget_mapper import \
 
 
 class LayerMetaDataWidget(QWidget):
-    def __init__(self, node, parent=None):
+    def __init__(self, node=None, parent=None):
         super(LayerMetaDataWidget, self).__init__(parent=parent)
-        self._node = node
+        self._node = None
         self.setObjectName("layer_meta_data_widget")
         self.create_ui()
+        if node is not None:
+            self.node = node
 
 
     def create_ui(self):
@@ -60,8 +62,9 @@ class LayerMetaDataWidget(QWidget):
         self._scroll_area.setWidgetResizable(True)
         layout.addWidget(self._scroll_area)
 
+
     def pull_data(self):
-        meta_data = get_layer_meta_data(get_active_node())
+        meta_data = get_layer_meta_data(self._node)
         try:
             data = serializer.loads(meta_data)
         except:
@@ -80,7 +83,7 @@ class LayerMetaDataWidget(QWidget):
     def push_data(self):
         content = self._scroll_area.widget()
         meta_data = "{}" if content is None else serializer.dumps(content.data)
-        set_layer_meta_data(get_active_node(), meta_data)
+        set_layer_meta_data(self._node, meta_data)
 
 
     def get_node(self):
@@ -95,6 +98,7 @@ class LayerMetaDataWidget(QWidget):
         old_node = self.get_node()
         if new_node != old_node:
             self._node = node
+            self.pull_data()
             self.node_changed.emit(self.get_node())
 
 

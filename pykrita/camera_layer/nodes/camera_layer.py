@@ -29,16 +29,17 @@ from camera_layer.data_types.camera_layer_data import \
         CameraLayerData
 
 
-class CameraLayerFS(QObject):
+class CameraLayer(QObject):
     """
     Function set for camera layer.
     serves as debug console.
     """
+    meta_data_id = "akir:camera_layer"
 
     def __init__(self, node):
-        super(CameraLayerFS, self).__init__()
+        super(CameraLayer, self).__init__()
+        self._camera_layer_data = CameraLayerData()
         self._node = node
-        self._document = find_document_for(self._node)
 
         cam_info = QCameraInfo.availableCameras()[0]
         cam_info_desc = cam_info.description()
@@ -99,3 +100,40 @@ class CameraLayerFS(QObject):
     def closeEvent(self, event):
         self._camera.stop()
         return super(CameraLayerFS, self).closeEvent(event)
+
+
+    def get_data(self):
+        return CameraLayerData.cast(self._camera_layer_data)
+
+
+    QSlot(CameraLayerData)  # non-QObject?
+    def set_data(self, new_data):
+        new_data = CameraLayerData.cast(new_data)
+        old_data = self.get_data()
+        if new_data != old_data:
+            self._camera_layer_data = new_data
+            self.data_changed.emit(self.get_data())
+
+
+    def pull_data(self):
+        meta_data = get_layer_meta_data(self._node)
+        try:
+            data = serializer.loads(meta_data)
+        except:
+            data = oDict()
+        self._camera_layer = data[self.meta_data_id]
+
+
+    def push_data(self):
+        meta_data = get_layer_meta_data(self._node)
+        try:
+            data = serializer.loads(meta_data)
+        except:
+            data = oDict()
+        data[self.meta_data_id] = self._camera_layer
+        meta_data = serializer.dumps(data)
+        set_layer_meta_data(self._node, meta_data)
+
+
+    data_changed = QSignal(CameraLayerData)
+    data = QProperty(CameraLayerData, fget=get_data, fset=set_data, notify=data_changed, user=True)
