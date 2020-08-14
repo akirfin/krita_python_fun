@@ -28,7 +28,8 @@ class Spawner(object):
         self._spawn_accumulate += self.spawn_rate * delta_time
         spawn_count = math.floor(self._spawn_accumulate)  # only full particles can spawn
         self._spawn_accumulate -= spawn_count
-        for corpse, _ in zip(corpses, range(spawn_count)):
+        real_spawn_count = min(len(corpses), spawn_count)
+        for corpse, _ in zip(corpses, range(real_spawn_count)):
             phi = random() * math.tau
             power = random() * self.spawn_scatter
             scatter = QVector2D(power * math.cos(phi), power * math.sin(phi))
@@ -36,4 +37,4 @@ class Spawner(object):
             corpse.position = QVector2D(self.spawn_position) + random() * corpse.velocity
             corpse.color = QColor(*self.spawn_color)
             corpse.lifespan = self.spawn_lifespan - random() * delta_time
-        return spawn_count
+        return real_spawn_count

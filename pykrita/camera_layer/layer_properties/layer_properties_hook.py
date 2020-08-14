@@ -18,14 +18,14 @@ from PyQt5.QtCore import pyqtSignal as QSignal
 from PyQt5.QtCore import pyqtProperty as QProperty
 
 from PyQt5.QtCore import \
-        QObject, QEvent, QSize, QTimer
+        QObject, QEvent, QSize
 
 from PyQt5.QtGui import \
-        QPalette
+        QPalette, QColor
 
 from PyQt5.QtWidgets import \
         QWidget, QDialog, QStackedLayout, QScrollArea, \
-        QApplication, QTextEdit
+        QApplication
 
 from camera_layer.common.utils_py import \
         print_console, first, last, UnicodeType, BytesType
@@ -33,11 +33,14 @@ from camera_layer.common.utils_py import \
 from camera_layer.common.utils_kis import \
         get_active_node
 
-from .widget_mapper import \
-        widget_mapper
-
 from camera_layer.common.data_serializer import \
         serializer
+
+from camera_layer.common.layer_meta_data import \
+        get_layer_meta_data, set_layer_meta_data
+
+from .widget_mapper import \
+        widget_mapper
 
 
 class LayerMetaDataWidget(QWidget):
@@ -57,28 +60,15 @@ class LayerMetaDataWidget(QWidget):
         self._scroll_area.setWidgetResizable(True)
         layout.addWidget(self._scroll_area)
 
-
     def pull_data(self):
-        def get_meta_data(_result):
-            qapp = QApplication.instance()
-            for w in qapp.topLevelWidgets():
-                if isinstance(w, QDialog):
-                    if w.metaObject().className() == "KisMetaDataEditor":
-                        dialog = w
-                        edit_description = dialog.findChild(QTextEdit, "editDescription")
-                        _result.append(edit_description.toPlainText())
-                        dialog.reject()
-
-        # target node must be activeNode!
-        result = list()
-        QTimer.singleShot(0, lambda rs=result: get_meta_data(rs))
-        Krita.instance().action("EditLayerMetaData").trigger()
-
+        meta_data = get_layer_meta_data(get_active_node())
         try:
-            data = serializer.loads(first(result))
+            data = serializer.loads(meta_data)
         except:
             data = oDict()
         content = widget_mapper.create_widget(data)
+        content.setObjectName("layer_meta_data")
+        content.title = "Layer Meta Data"
         old_widget = self._scroll_area.widget()
         self._scroll_area.setWidget(content)
         if old_widget is not None:
@@ -88,22 +78,9 @@ class LayerMetaDataWidget(QWidget):
 
     @QSlot()
     def push_data(self):
-        widget = self._scroll_area.widget()
-        data = "{}" if widget is None else serializer.dumps(widget.data)
-
-        def set_text(_new_text):
-            qapp = QApplication.instance()
-            for w in qapp.topLevelWidgets():
-                if isinstance(w, QDialog):
-                    if w.metaObject().className() == "KisMetaDataEditor":
-                        dialog = w
-                        edit_description = dialog.findChild(QTextEdit, "editDescription")
-                        edit_description.setPlainText(_new_text)
-                        dialog.accept()
-
-        # target node must be activeNode!
-        QTimer.singleShot(0, lambda text=data: set_text(text))
-        Krita.instance().action("EditLayerMetaData").trigger()
+        content = self._scroll_area.widget()
+        meta_data = "{}" if content is None else serializer.dumps(content.data)
+        set_layer_meta_data(get_active_node(), meta_data)
 
 
     def minimumSizeHint(self):
@@ -134,6 +111,8 @@ class LayerPropertiesHook(QObject):
     def keep_alive(cls, qobj):
         if qobj not in cls._alive:
             cls._alive.append(qobj)
+            return True
+        return False
 
     @classmethod
     def drop_dead(cls, qobj):
@@ -144,14 +123,18 @@ class LayerPropertiesHook(QObject):
         if isinstance(obj, QDialog):
             dialog = obj
             if dialog.metaObject().className() == "KisDlgLayerProperties":
-                if event.type() == QEvent.WindowIconChange:  # done only once in init.
+                flags = dialog.windowFlags()
+                if not (flags & Qt.WindowStaysOnTopHint):
+                    dialog.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
                 # if event.type() == 216:  # done only once in init.
-                    layout = dialog.layout()  # QVBoxLayout
-                    node = get_active_node()
-                    widget = LayerMetaDataWidget(node)
-                    self.keep_alive(dialog)
-                    widget.pull_data()
-                    layout.insertWidget(1, widget, stretch=100)
-                    dialog.destroyed.connect(lambda target=dialog: self.drop_dead(target))
-                    dialog.accepted.connect(widget.push_data)
+                if event.type() == QEvent.WindowIconChange:  # done only once in init.
+                    if self.keep_alive(dialog):
+                        # new unhandeled dialog!
+                        dialog.destroyed.connect(lambda target=dialog: self.drop_dead(target))
+                        layout = dialog.layout()  # QVBoxLayout
+                        node = get_active_node()
+                        widget = LayerMetaDataWidget(node)
+                        widget.pull_data()
+                        layout.insertWidget(1, widget, stretch=100)
+                        dialog.accepted.connect(widget.push_data)
         return super(LayerPropertiesHook, self).eventFilter(obj, event)
