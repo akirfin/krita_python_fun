@@ -11,10 +11,10 @@ from PyQt5.QtCore import \
 from PyQt5.QtWidgets import \
         QDialog, QApplication, QTextEdit
 
-from camera_layer.common.utils_py import \
+from .utils_py import \
         print_console, first, last, UnicodeType, BytesType
 
-from camera_layer.common.utils_kis import \
+from .utils_kis import \
         keep_active_node
 
 

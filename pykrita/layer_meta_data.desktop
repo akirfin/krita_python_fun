@@ -1,9 +1,8 @@
 [Desktop Entry]
 Type = Service
 ServiceTypes = Krita/PythonPlugin
-X-KDE-Library = camera_layer
+X-KDE-Library = layer_meta_data
 X-Python-2-Compatible = false
 X-Krita-Manual = readme.md
-Name = Camera Layer
+Name = Layer Meta Data
 Comment = Experimental plugin
-Dependency = layer_meta_data

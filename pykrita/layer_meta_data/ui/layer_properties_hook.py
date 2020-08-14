@@ -6,8 +6,8 @@ from camera_layer.layer_properties.layer_properties_hook import \
         LayerPropertiesHook
 
 LayerPropertiesHook.register()
-
 """
+
 from collections import OrderedDict as oDict
 
 from krita import Krita
@@ -27,16 +27,16 @@ from PyQt5.QtWidgets import \
         QWidget, QDialog, QStackedLayout, QScrollArea, \
         QApplication
 
-from camera_layer.common.utils_py import \
+from layer_meta_data.common.utils_py import \
         print_console, first, last, UnicodeType, BytesType
 
-from camera_layer.common.utils_kis import \
+from layer_meta_data.common.utils_kis import \
         get_active_node
 
-from camera_layer.common.data_serializer import \
+from layer_meta_data.common.data_serializer import \
         serializer
 
-from camera_layer.common.layer_meta_data import \
+from layer_meta_data.common.layer_meta_data import \
         get_layer_meta_data, set_layer_meta_data
 
 from .widget_mapper import \
@@ -83,6 +83,25 @@ class LayerMetaDataWidget(QWidget):
         set_layer_meta_data(get_active_node(), meta_data)
 
 
+    def get_node(self):
+        return self._node
+
+
+    @QSlot(object)
+    def set_node(self, new_node):
+        if not isinstance(new_node, (Node, type(None))):
+            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
+        self._node = node
+        old_node = self.get_node()
+        if new_node != old_node:
+            self._node = node
+            self.node_changed.emit(self.get_node())
+
+
+    node_changed = QSignal(object)
+    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
+
+
     def minimumSizeHint(self):
         return QSize(200, 200)
 
@@ -90,6 +109,12 @@ class LayerMetaDataWidget(QWidget):
 class LayerPropertiesHook(QObject):
     _alive = list()
     _hook = None
+
+
+    @classmethod
+    def is_registered(cls):
+        return cls._hook is not None
+
 
     @classmethod
     def register(cls):
@@ -113,6 +138,7 @@ class LayerPropertiesHook(QObject):
             cls._alive.append(qobj)
             return True
         return False
+
 
     @classmethod
     def drop_dead(cls, qobj):

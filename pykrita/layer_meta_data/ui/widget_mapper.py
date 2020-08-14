@@ -23,7 +23,7 @@ from PyQt5.QtWidgets import \
         QWidget, QFrame, QLabel, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, \
         QMenuBar, QFormLayout, QHBoxLayout, QVBoxLayout, QToolButton
 
-from camera_layer.common.utils_py import \
+from layer_meta_data.common.utils_py import \
         first, last, UnicodeType, BytesType
 
 
@@ -331,13 +331,18 @@ class NoneWidget(QLabel):
     def __init__(self, parent=None):
         super(NoneWidget, self).__init__("None", parent=parent)
 
+
     def get_data(self):
         return None
+
+
     QSlot(type(None))
     def set_data(self, new_data):
         if not isinstance(new_data, type(None)):
             raise RuntimeError("Not None instance!")
         # self.data_changed.emit(self.get_data())  # will newer happen!
+
+
     data_changed = QSignal(type(None))
     data = QProperty(type(None), fget=get_data, fset=set_data, notify=data_changed, user=True)
 
@@ -348,8 +353,11 @@ class BoolWidget(QCheckBox):
     def __init__(self, parent=None):
         super(BoolWidget, self).__init__(parent=parent)
 
+
     def get_data(self):
         return self.isChecked()
+
+
     QSlot(bool)
     def set_data(self, new_data):
         new_data = bool(new_data)
@@ -357,6 +365,8 @@ class BoolWidget(QCheckBox):
         if new_data != old_data:
             self.setChecked(new_data)
             self.data_changed.emit(self.get_data())
+
+
     data_changed = QSignal(bool)
     data = QProperty(bool, fget=get_data, fset=set_data, notify=data_changed, user=True)
 
@@ -368,8 +378,10 @@ class IntWidget(QSpinBox):
         super(IntWidget, self).__init__(parent=parent)
         self.setRange(-2147483648, 2147483647)  # c int min / max
 
+
     def get_data(self):
         return self.value()
+
     QSlot(int)
     def set_data(self, new_data):
         new_data = int(new_data)
@@ -377,6 +389,8 @@ class IntWidget(QSpinBox):
         if new_data != old_data:
             self.setValue(new_data)
             self.data_changed.emit(self.get_data())
+
+
     data_changed = QSignal(int)
     data = QProperty(int, fget=get_data, fset=set_data, notify=data_changed, user=True)
 
@@ -389,11 +403,15 @@ class FloatWidget(QDoubleSpinBox):
         self.setRange(float("-inf"), float("inf"))
         self.setDecimals(323)
 
+
     def textFromValue(self, val):
         return "{:.2f}".format(float(val))
 
+
     def get_data(self):
         return self.value()
+
+
     QSlot(float)
     def set_data(self, new_data):
         new_data = float(new_data)
@@ -401,9 +419,10 @@ class FloatWidget(QDoubleSpinBox):
         if new_data != old_data:
             self.setValue(new_data)
             self.data_changed.emit(self.get_data())
+
+
     data_changed = QSignal(float)
     data = QProperty(float, fget=get_data, fset=set_data, notify=data_changed, user=True)
-
 
 widget_mapper.register(float, FloatWidget)
 
@@ -416,6 +435,8 @@ class StringWidget(QLineEdit):
 
     def get_data(self):
         return self.text()
+
+
     @QSlot(UnicodeType)
     def set_data(self, new_data):
         new_data = UnicodeType(new_data)
@@ -423,8 +444,9 @@ class StringWidget(QLineEdit):
         if new_data != old_data:
             self.setText(new_data)
             self.data_changed.emit(self.get_data())
+
+
     data_changed = QSignal(UnicodeType)
     data = QProperty(UnicodeType, fget=get_data, fset=set_data, notify=data_changed, user=True)
-
 
 widget_mapper.register(UnicodeType, StringWidget)

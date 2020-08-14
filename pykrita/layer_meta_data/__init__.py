@@ -27,37 +27,24 @@ def add_PYTHONPATH():
             _memo.add(path)
 
 
-def load_plugins():
-    """
-    Make sure that depending plugins are registered.
-    """
-    try:
-        import layer_meta_data
-        layer_meta_data.register()
-    except:
-        raise RuntimeError("Plugin dependency, layer_meta_data plugin is needed!")
-
-
 def register():
     """
     Register Krita plugin.
     Add extensions & dockers to Krita.
     """
     # add_PYTHONPATH()
-    load_plugins()
 
-    from .extension import CameraLayerExtension
-    from layer_meta_data.ui.widget_mapper import \
-            widget_mapper
-    from .data_types.camera_layer_data import \
-            CameraLayerData
-    from .ui.camera_layer_widget import \
-            CameraLayerWidget
+    # from .extension import LayerMetaDataExtension
 
-    widget_mapper.register(CameraLayerData, CameraLayerWidget)
+    # app = Krita.instance()
+    # app.addExtension(LayerMetaDataExtension(app))
 
-    app = Krita.instance()
-    app.addExtension(CameraLayerExtension(app))
+    from .ui.layer_properties_hook import \
+            LayerPropertiesHook
+
+    if not LayerPropertiesHook.is_registered():
+        LayerPropertiesHook.register()
+
 
 
 def unregister():
@@ -67,10 +54,11 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    app = Krita.instance()
+    from .ui.layer_properties_hook import \
+            LayerPropertiesHook
 
-    app.removeExtension('extension_id???')
-    app.removeDockWidgetFactory('docker_id???')
+    if LayerPropertiesHook.is_registered():
+        LayerPropertiesHook.unregister()
 
     del sys.modules["Extension modules..."]
 

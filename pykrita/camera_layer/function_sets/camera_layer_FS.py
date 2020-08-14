@@ -1,24 +1,42 @@
 
 
 from krita import Krita
-from PyQt5.QtGui import QImage
-from PyQt5.QtWidgets import QPlainTextEdit
-from PyQt5.QtMultimedia import QCameraInfo, QCamera, QCameraImageCapture
 
-from .common.utils_qt import \
+from PyQt5.QtCore import Qt
+from PyQt5.QtCore import pyqtSlot as QSlot
+from PyQt5.QtCore import pyqtSignal as QSignal
+from PyQt5.QtCore import pyqtProperty as QProperty
+
+from PyQt5.QtCore import \
+        QObject
+
+from PyQt5.QtGui import \
+        QImage
+
+from PyQt5.QtWidgets import \
+        QPlainTextEdit, QWidget, QComboBox, QPushButton
+
+from PyQt5.QtMultimedia import \
+        QCameraInfo, QCamera, QCameraImageCapture
+
+from camera_layer.common.utils_qt import \
         get_enum_str
 
-from .common.utils_kis import \
+from camera_layer.common.utils_kis import \
         find_document_for
 
+from camera_layer.data_types.camera_layer_data import \
+        CameraLayerData
 
-class CameraLayer(QPlainTextEdit):
+
+class CameraLayerFS(QObject):
     """
+    Function set for camera layer.
     serves as debug console.
     """
 
     def __init__(self, node):
-        super(CameraLayer, self).__init__()
+        super(CameraLayerFS, self).__init__()
         self._node = node
         self._document = find_document_for(self._node)
 
@@ -80,4 +98,4 @@ class CameraLayer(QPlainTextEdit):
 
     def closeEvent(self, event):
         self._camera.stop()
-        return super(CameraLayer, self).closeEvent(event)
+        return super(CameraLayerFS, self).closeEvent(event)

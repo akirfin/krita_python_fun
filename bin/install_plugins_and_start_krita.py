@@ -47,7 +47,7 @@ if __name__ == "__main__":
     pykrita_src_dir = lambda entry: os.path.join(this_dir, "..", "pykrita", entry)
     pykrita_trg_dir = lambda entry: os.path.join(krita_resource_dir, entry)
 
-    for entry in ("arc_welding_tool", "camera_layer", "fetch_gallery"):
+    for entry in ("arc_welding_tool", "camera_layer", "fetch_gallery", "layer_meta_data"):
         src_dir = pykrita_src_dir(entry)
         trg_dir = pykrita_trg_dir(entry)
         if os.path.isdir(trg_dir):
@@ -56,7 +56,7 @@ if __name__ == "__main__":
         copytree(src_dir, trg_dir)
         print(f"copytree(\n\t{src_dir!r},\n\t{trg_dir!r})")
 
-    for entry in ("arc_welding_tool.desktop", "camera_layer.desktop", "fetch_gallery.desktop"):
+    for entry in ("arc_welding_tool.desktop", "camera_layer.desktop", "fetch_gallery.desktop", "layer_meta_data.desktop"):
         src_dsk = pykrita_src_dir(entry)
         copy2(src_dsk, krita_resource_dir)
         print(f"copy2(\n\t{src_dsk!r},\n\t{krita_resource_dir!r})")

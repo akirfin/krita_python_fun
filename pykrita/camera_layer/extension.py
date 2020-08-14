@@ -14,7 +14,8 @@ from .common.utils_py import \
 from .common.utils_qt import \
         walk_menu
 
-from .camera_layer import CameraLayer
+from .function_sets.camera_layer_FS import \
+        CameraLayerFS
 
 
 class CameraLayerExtension(Extension):
@@ -25,7 +26,6 @@ class CameraLayerExtension(Extension):
 
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)
-        self._camera_layers = list()
 
 
     def setup(self):
@@ -54,6 +54,5 @@ class CameraLayerExtension(Extension):
         new_node = document.createNode("Camera layer", "paintlayer")
         parent_node.addChildNode(new_node, active_node)
         # attach camera to new node
-        camera_layer = CameraLayer(new_node)
+        camera = CameraLayerFS(new_node)
         # now where to put this camera_layer ?
-        self._camera_layers.append(camera_layer)
