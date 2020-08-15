@@ -55,13 +55,13 @@ def register():
     from layer_meta_data.ui.widget_mapper import \
             widget_mapper
 
+    app = Krita.instance()
+    extension = CameraLayerExtension(app)
+    app.addExtension(extension)
+
     widget_mapper.register(
             CameraLayerData,
-            from_data=lambda node, data: CameraLayerWidget(CameraLayer(node, data)),
-            to_data=lambda camera_layer_widget: camera_layer_widget.data)
-
-    app = Krita.instance()
-    app.addExtension(CameraLayerExtension(app))
+            CameraLayerWidget)
 
 
 def unregister():

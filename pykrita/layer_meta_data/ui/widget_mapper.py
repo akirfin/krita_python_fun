@@ -11,6 +11,8 @@ try:
 except:
     from collections import Mapping, Iterable
 
+from krita import Krita, Node
+
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot as QSlot
 from PyQt5.QtCore import pyqtSignal as QSignal
@@ -36,11 +38,14 @@ class WidgetMapper(object):
             cls._instance = cls()
         return cls._instance
 
+
     def __init__(self):
         self._registry = oDict()
 
+
     def register(self, data_type, widget_type):
         self._registry[data_type] = widget_type
+
 
     def create_widget(self, obj):
         """
@@ -70,6 +75,7 @@ class DictWidget(QWidget):
 
     def __init__(self, parent=None):
         super(DictWidget, self).__init__(parent=parent)
+        self._node = None
         self.create_ui()
 
 
@@ -93,7 +99,11 @@ class DictWidget(QWidget):
         self.title_bar.setLayout(title_bar_layout)
 
         self._folding = QToolButton()
-        self._folding.setArrowType(Qt.RightArrow)
+        self._folding.setCheckable(True)
+        self._folding.setStyleSheet(
+                        ('.QToolButton {border: none;}'
+                         '.QToolButton:hover {border: 1px;}'
+                         '.QToolButton:pressed {border: 1px;}'))
         title_bar_layout.addWidget(self._folding)
 
         self._title_widget = QLabel("")
@@ -119,6 +129,19 @@ class DictWidget(QWidget):
         # self.items.setLabelAlignment(Qt.AlignRight)
         self.items.setLayout(self.items_layout)
 
+        self._folding.clicked.connect(self.on_toggle_folding)
+        self.on_toggle_folding(True)
+
+
+    def on_toggle_folding(self, checked=None):
+        self._folding.setChecked(checked)
+        if self._folding.isChecked():
+            self._folding.setArrowType(Qt.DownArrow)
+            self.items.setVisible(True)
+        else:
+            self._folding.setArrowType(Qt.RightArrow)
+            self.items.setVisible(False)
+
 
     def adjust_label_widths(self, width):
         layout = self.items_layout
@@ -143,8 +166,7 @@ class DictWidget(QWidget):
                 widget.setParent(None)
 
 
-    def get_data(self):
-        result = oDict()
+    def iter_rows(self):
         layout = self.items_layout
         for i in range(layout.rowCount()):
             item = layout.itemAt(i, QFormLayout.LabelRole)
@@ -153,6 +175,12 @@ class DictWidget(QWidget):
             value_widget = None if item is None else item.widget()
             item = layout.itemAt(i, QFormLayout.SpanningRole)
             spanning_widget = None if item is None else item.widget()
+            yield label_widget, value_widget, spanning_widget
+
+
+    def get_data(self):
+        result = oDict()
+        for label_widget, value_widget, spanning_widget in self.iter_rows():
             if spanning_widget is not None:
                 label = spanning_widget.objectName()
                 result[label] = spanning_widget.data
@@ -183,6 +211,29 @@ class DictWidget(QWidget):
     data = QProperty(object, fget=get_data, fset=set_data, notify=data_changed, user=True)
 
 
+    def get_node(self):
+        return self._node
+
+
+    @QSlot(object)
+    def set_node(self, new_node):
+        if not isinstance(new_node, (Node, type(None))):
+            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
+        old_node = self.get_node()
+        if new_node != old_node:
+            self._node = new_node
+            for label_widget, value_widget, spanning_widget in self.iter_rows():
+                if spanning_widget is not None:
+                    spanning_widget.node = new_node
+                elif (label_widget is not None) and (value_widget is not None):
+                    value_widget.node = new_node
+            self.node_changed.emit(self.get_node())
+
+
+    node_changed = QSignal(object)
+    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
+
+
     def get_title(self):
         return self._title_widget.text()
 
@@ -205,6 +256,7 @@ class ListWidget(QWidget):
 
     def __init__(self, parent=None):
         super(ListWidget, self).__init__(parent=parent)
+        self._node = None
         self.create_ui()
 
 
@@ -228,7 +280,11 @@ class ListWidget(QWidget):
         self.title_bar.setLayout(title_bar_layout)
 
         self._folding = QToolButton()
-        self._folding.setArrowType(Qt.RightArrow)
+        self._folding.setCheckable(True)
+        self._folding.setStyleSheet(
+                        ('.QToolButton {border: none;}'
+                         '.QToolButton:hover {border: 1px;}'
+                         '.QToolButton:pressed {border: 1px;}'))
         title_bar_layout.addWidget(self._folding)
 
         self._title_widget = QLabel("")
@@ -241,17 +297,35 @@ class ListWidget(QWidget):
         self.menu_bar.addMenu("Edit")
         title_bar_layout.addWidget(self.menu_bar)
 
-        self.items = QFormLayout()
-        self.items.setHorizontalSpacing(5)
-        self.items.setVerticalSpacing(2)
-        self.items.setContentsMargins(48, 4, 0, 8)
+        self.items = QWidget()
+        # self.items.setAutoFillBackground(True)
+        # self.items.setBackgroundRole(QPalette.Window)
+        layout.addWidget(self.items)
+
+        self.items_layout = QFormLayout()
+        self.items_layout.setHorizontalSpacing(5)
+        self.items_layout.setVerticalSpacing(2)
+        self.items_layout.setContentsMargins(48, 4, 0, 8)
         # self.items.setAlignment(Qt.AlignTop)
         # self.items.setLabelAlignment(Qt.AlignRight)
-        layout.addLayout(self.items)
+        self.items.setLayout(self.items_layout)
+
+        self._folding.clicked.connect(self.on_toggle_folding)
+        self.on_toggle_folding(True)
+
+
+    def on_toggle_folding(self, checked=None):
+        self._folding.setChecked(checked)
+        if self._folding.isChecked():
+            self._folding.setArrowType(Qt.DownArrow)
+            self.items.setVisible(True)
+        else:
+            self._folding.setArrowType(Qt.RightArrow)
+            self.items.setVisible(False)
 
 
     def adjust_label_widths(self, width):
-        layout = self.items
+        layout = self.items_layout
         for i in range(layout.rowCount()):
             item = layout.itemAt(i, QFormLayout.LabelRole)
             if item is not None:
@@ -264,7 +338,7 @@ class ListWidget(QWidget):
 
 
     def clear(self):
-        layout = self.items
+        layout = self.items_layout
         while layout.count():
             item = layout.takeAt(0)
             widget = item.widget()
@@ -273,9 +347,8 @@ class ListWidget(QWidget):
                 widget.setParent(None)
 
 
-    def get_data(self):
-        result = list()
-        layout = self.items
+    def iter_rows(self):
+        layout = self.items_layout
         for i in range(layout.rowCount()):
             item = layout.itemAt(i, QFormLayout.LabelRole)
             label_widget = None if item is None else item.widget()
@@ -283,6 +356,13 @@ class ListWidget(QWidget):
             value_widget = None if item is None else item.widget()
             item = layout.itemAt(i, QFormLayout.SpanningRole)
             spanning_widget = None if item is None else item.widget()
+            yield label_widget, value_widget, spanning_widget
+
+
+    def get_data(self):
+        result = list()
+        layout = self.items_layout
+        for label_widget, value_widget, spanning_widget in self.iter_rows():
             if spanning_widget is not None:
                 label = spanning_widget.objectName() # not used
                 result.append(spanning_widget.data)
@@ -295,7 +375,7 @@ class ListWidget(QWidget):
     QSlot(object)
     def set_data(self, new_data):
         self.clear()
-        layout = self.items
+        layout = self.items_layout
         for index, value in enumerate(new_data):
             widget = widget_mapper.create_widget(value)
             widget.setObjectName(str(index))
@@ -311,6 +391,29 @@ class ListWidget(QWidget):
 
     data_changed = QSignal(object)
     data = QProperty(object, fget=get_data, fset=set_data, notify=data_changed, user=True)
+
+
+    def get_node(self):
+        return self._node
+
+
+    @QSlot(object)
+    def set_node(self, new_node):
+        if not isinstance(new_node, (Node, type(None))):
+            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
+        old_node = self.get_node()
+        if new_node != old_node:
+            self._node = new_node
+            for label_widget, value_widget, spanning_widget in self.iter_rows():
+                if spanning_widget is not None:
+                    spanning_widget.node = new_node
+                elif (label_widget is not None) and (value_widget is not None):
+                    value_widget.node = new_node
+            self.node_changed.emit(self.get_node())
+
+
+    node_changed = QSignal(object)
+    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
 
 
     def get_title(self):
@@ -333,6 +436,7 @@ class ListWidget(QWidget):
 class NoneWidget(QLabel):
     def __init__(self, parent=None):
         super(NoneWidget, self).__init__("None", parent=parent)
+        self._node = None
 
 
     def get_data(self):
@@ -349,12 +453,32 @@ class NoneWidget(QLabel):
     data_changed = QSignal(type(None))
     data = QProperty(type(None), fget=get_data, fset=set_data, notify=data_changed, user=True)
 
+
+    def get_node(self):
+        return self._node
+
+
+    @QSlot(object)
+    def set_node(self, new_node):
+        if not isinstance(new_node, (Node, type(None))):
+            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
+        old_node = self.get_node()
+        if new_node != old_node:
+            self._node = new_node
+            self.node_changed.emit(self.get_node())
+
+
+    node_changed = QSignal(object)
+    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
+
+
 widget_mapper.register(type(None), NoneWidget)
 
 
 class BoolWidget(QCheckBox):
     def __init__(self, parent=None):
         super(BoolWidget, self).__init__(parent=parent)
+        self._node = None
 
 
     def get_data(self):
@@ -373,12 +497,31 @@ class BoolWidget(QCheckBox):
     data_changed = QSignal(bool)
     data = QProperty(bool, fget=get_data, fset=set_data, notify=data_changed, user=True)
 
+
+    def get_node(self):
+        return self._node
+
+
+    @QSlot(object)
+    def set_node(self, new_node):
+        if not isinstance(new_node, (Node, type(None))):
+            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
+        old_node = self.get_node()
+        if new_node != old_node:
+            self._node = new_node
+            self.node_changed.emit(self.get_node())
+
+
+    node_changed = QSignal(object)
+    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
+
 widget_mapper.register(bool, BoolWidget)
 
 
 class IntWidget(QSpinBox):
     def __init__(self, parent=None):
         super(IntWidget, self).__init__(parent=parent)
+        self._node = None
         self.setRange(-2147483648, 2147483647)  # c int min / max
 
 
@@ -397,12 +540,31 @@ class IntWidget(QSpinBox):
     data_changed = QSignal(int)
     data = QProperty(int, fget=get_data, fset=set_data, notify=data_changed, user=True)
 
+
+    def get_node(self):
+        return self._node
+
+
+    @QSlot(object)
+    def set_node(self, new_node):
+        if not isinstance(new_node, (Node, type(None))):
+            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
+        old_node = self.get_node()
+        if new_node != old_node:
+            self._node = new_node
+            self.node_changed.emit(self.get_node())
+
+
+    node_changed = QSignal(object)
+    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
+
 widget_mapper.register(int, IntWidget)
 
 
 class FloatWidget(QDoubleSpinBox):
     def __init__(self, parent=None):
         super(FloatWidget, self).__init__(parent=parent)
+        self._node = None
         self.setRange(float("-inf"), float("inf"))
         self.setDecimals(323)
 
@@ -427,12 +589,31 @@ class FloatWidget(QDoubleSpinBox):
     data_changed = QSignal(float)
     data = QProperty(float, fget=get_data, fset=set_data, notify=data_changed, user=True)
 
+
+    def get_node(self):
+        return self._node
+
+
+    @QSlot(object)
+    def set_node(self, new_node):
+        if not isinstance(new_node, (Node, type(None))):
+            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
+        old_node = self.get_node()
+        if new_node != old_node:
+            self._node = new_node
+            self.node_changed.emit(self.get_node())
+
+
+    node_changed = QSignal(object)
+    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
+
 widget_mapper.register(float, FloatWidget)
 
 
 class StringWidget(QLineEdit):
     def __init__(self, parent=None):
         super(StringWidget, self).__init__(parent=parent)
+        self._node = None
         self.setStyleSheet(".StringWidget {padding-left: 3px;}")
 
 
@@ -451,5 +632,23 @@ class StringWidget(QLineEdit):
 
     data_changed = QSignal(UnicodeType)
     data = QProperty(UnicodeType, fget=get_data, fset=set_data, notify=data_changed, user=True)
+
+
+    def get_node(self):
+        return self._node
+
+
+    @QSlot(object)
+    def set_node(self, new_node):
+        if not isinstance(new_node, (Node, type(None))):
+            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
+        old_node = self.get_node()
+        if new_node != old_node:
+            self._node = new_node
+            self.node_changed.emit(self.get_node())
+
+
+    node_changed = QSignal(object)
+    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
 
 widget_mapper.register(UnicodeType, StringWidget)

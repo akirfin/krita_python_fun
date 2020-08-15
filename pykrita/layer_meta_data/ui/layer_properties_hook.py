@@ -10,7 +10,7 @@ LayerPropertiesHook.register()
 
 from collections import OrderedDict as oDict
 
-from krita import Krita
+from krita import Krita, Node
 
 from PyQt5.QtCore import Qt
 from PyQt5.QtCore import pyqtSlot as QSlot
@@ -36,7 +36,7 @@ from layer_meta_data.common.utils_kis import \
 from layer_meta_data.common.data_serializer import \
         serializer
 
-from layer_meta_data.common.layer_meta_data import \
+from layer_meta_data.layer_meta_data import \
         get_layer_meta_data, set_layer_meta_data
 
 from .widget_mapper import \
@@ -74,6 +74,7 @@ class LayerMetaDataWidget(QWidget):
         content.title = "Layer Meta Data"
         old_widget = self._scroll_area.widget()
         self._scroll_area.setWidget(content)
+        content.node = self._node
         if old_widget is not None:
             old_widget.deletelater()
             old_widget.setParent(None)
@@ -94,10 +95,9 @@ class LayerMetaDataWidget(QWidget):
     def set_node(self, new_node):
         if not isinstance(new_node, (Node, type(None))):
             raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
-        self._node = node
         old_node = self.get_node()
         if new_node != old_node:
-            self._node = node
+            self._node = new_node
             self.pull_data()
             self.node_changed.emit(self.get_node())
 
@@ -113,7 +113,6 @@ class LayerMetaDataWidget(QWidget):
 class LayerPropertiesHook(QObject):
     _alive = list()
     _hook = None
-
 
     @classmethod
     def is_registered(cls):
@@ -159,12 +158,11 @@ class LayerPropertiesHook(QObject):
                 # if event.type() == 216:  # done only once in init.
                 if event.type() == QEvent.WindowIconChange:  # done only once in init.
                     if self.keep_alive(dialog):
-                        # new unhandeled dialog!
+                        # was added to keep_alive (only first time)
                         dialog.destroyed.connect(lambda target=dialog: self.drop_dead(target))
                         layout = dialog.layout()  # QVBoxLayout
                         node = get_active_node()
                         widget = LayerMetaDataWidget(node)
-                        widget.pull_data()
                         layout.insertWidget(1, widget, stretch=100)
                         dialog.accepted.connect(widget.push_data)
         return super(LayerPropertiesHook, self).eventFilter(obj, event)

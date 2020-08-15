@@ -39,7 +39,7 @@ def register():
     # app = Krita.instance()
     # app.addExtension(LayerMetaDataExtension(app))
 
-    from .ui.layer_properties_hook import \
+    from layer_meta_data.ui.layer_properties_hook import \
             LayerPropertiesHook
 
     if not LayerPropertiesHook.is_registered():

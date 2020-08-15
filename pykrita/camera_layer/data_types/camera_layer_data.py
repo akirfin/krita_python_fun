@@ -1,7 +1,13 @@
+from collections import OrderedDict as oDict
+try:
+    from collections.abc import Mapping, Iterable
+except:
+    from collections import Mapping, Iterable
+
 from camera_layer.common.utils_py import \
         UnicodeType, BytesType
 
-from camera_layer.common.data_serializer import \
+from layer_meta_data.common.data_serializer import \
         serializer
 
 
@@ -91,7 +97,7 @@ class CameraLayerData(object):
 
     def __repr__(self):
         cls = type(self)
-        return ("cls.__name__("
+        return ("{cls.__name__}("
                 "camera_id={self.camera_id!r}, "
                 "mode={self.mode!r}, "
                 "transform={self.transform!r})").format(**locals())
