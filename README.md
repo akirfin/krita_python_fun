@@ -35,3 +35,10 @@ show extra secton in layer properties.
 JSON tree of user defined settings.
 (currntly JSON is stored in DublinCore.publisher field.)
 (note: Krita bug in DublinCore.description, it is NOT saved!)
+
+## future ideas
+OpenStreetMap for krita
+glTF layer ??? (show glTF in layer or use layers as textures?)
+PixFika for Krita: (Shadertoy + glsl sandbox + PixFika)
+Tutor: interactive drawing tutor
+Multi user Krita: One document multiple interactive users. (sync layers + show fake cursors)

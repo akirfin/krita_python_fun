@@ -5,6 +5,8 @@
 <p>Experimental Plugin</p>
 
 <ul>
-<li>version: 0.0.1 pre-alpha</li>
+<li>
+__version__ = 0.0.0 (pre-alpha)
+</li>
 </ul>
 </html>
