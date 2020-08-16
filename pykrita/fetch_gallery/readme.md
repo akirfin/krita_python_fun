@@ -6,7 +6,7 @@
 
 <ul>
 <li>
-__version__ = 0.0.1 (pre-alpha)
+__version__ = 0.0.12 (pre-alpha)
 </li>
 </ul>
 </html>

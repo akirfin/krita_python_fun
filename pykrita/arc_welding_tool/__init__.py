@@ -4,7 +4,7 @@ Register & Unregister plugin for Krita.
 
 """
 
-__version__ = "0.0.1"
+__version__ = "0.0.12"
 
 import sys
 import os
