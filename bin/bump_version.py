@@ -76,8 +76,8 @@ if __name__ == "__main__":
                         f.write((line + "\n").encode("utf-8"))
 
                 # remove old file
-                # os.remove(file_path)
-                os.rename(file_path, file_path + "_bu")
+                os.remove(file_path)
+                # os.rename(file_path, file_path + "_bu")
 
                 # rename new file
                 os.rename(new_file_path, file_path)
