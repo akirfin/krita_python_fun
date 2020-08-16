@@ -21,26 +21,26 @@ pleeease!, cherry on top!)</p>
 
 <hr>
 
-<h3>arc_welding_tool</h3>
 <img src="./pykrita/arc_welding_tool/resources/title_image.jpg"/>
+<h3>arc_welding_tool</h3>
 <p>How to add new tool to Krita.
 Add button to toolbar
 Show tool context gizmo in viewport.</p>
 <hr>
 
-<h3>camera_layer</h3>
 <img src="./pykrita/camera_layer/resources/title_image.jpg"/>
+<h3>camera_layer</h3>
 <p>Custom layer node that pulls pixels from camera.</p>
 <hr>
 
-<h3>fetch_gallery</h3>
 <img src="./pykrita/fetch_gallery/resources/title_image.jpg"/>
+<h3>fetch_gallery</h3>
 <p>Fetch image data from url to QImage,
 and then push QImage to layer node.</p>
 <hr>
 
-<h3>layer_meta_data</h3>
 <img src="./pykrita/layer_meta_data/resources/title_image.jpg"/>
+<h3>layer_meta_data</h3>
 <p>show extra secton in layer properties.
 JSON tree of user defined settings.
 (currntly JSON is stored in DublinCore.publisher field.)
