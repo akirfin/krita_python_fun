@@ -11,6 +11,9 @@ from PyQt5.QtGui import \
 from PyQt5.QtWidgets import \
         QAction
 
+from .utils_py import \
+        print_console, first, last
+
 
 def get_enum_str(owner_cls, enum_cls, enum_value):
     """
@@ -23,11 +26,11 @@ def get_enum_str(owner_cls, enum_cls, enum_value):
             return attr_name
 
 
-def dump_qobj_tree(qobj):
+def dump_qobject_tree(qobj):
     """
     Dump QObject hierarchy.
     """
-    for q, depth in walk(qobj):
+    for q, depth in walk_qobjects([qobj]):
         indent = "    " * depth
         name = q.objectName()
         cls = type(q).__name__
@@ -37,7 +40,7 @@ def dump_qobj_tree(qobj):
             text = q.text()
         except:
             pass
-        print("{indent}objectName: \"{name}\", text: \"{text}\", cls: {cls}, meta_cls: {meta_cls}".format(**locals()))
+        print_console("{indent}objectName: \"{name}\", text: \"{text}\", cls: {cls}, meta_cls: {meta_cls}".format(**locals()))
 
 
 def dump_menu(menu):
@@ -48,9 +51,9 @@ def dump_menu(menu):
     for act, depth in walk_menu(menu):
         indent = depth * "    "
         name = act.objectName()
-        text = act.text() or "-------------"
+        text = act.text() or ""
         cls = type(act)
-        print("{indent}\"{text}\"  <{name}>".format(**locals()))
+        print('{indent}("{name}", "{text}")'.format(**locals()))
 
 
 def walk_menu(qmenu):
@@ -131,8 +134,28 @@ def block_signals(*objs, state=True):
             obj.blockSignals(old_state)
 
 
+def make_menus(menu_root, menu_entry_path, exist_ok=True):
+    """
+    menu_entry_path = [(menu_object_name, title), ...]
+    """
+    menu = menu_root
+    for name, title in menu_entry_path:
+        menu_action = first((a for a in menu.actions() if a.objectName() == name), None)
+        if menu_action is None:
+            # missing, create
+            menu = menu.addMenu(title)
+            menu.setObjectName(name +"_menu")
+            menu_action = menu.menuAction()
+            menu_action.setObjectName(name)
+        elif exist_ok:
+            menu = menu_action.menu()
+        else:
+            raise RuntimeError("Menu entry already exist! (did get: name={name!r}, title={title!r})".format(**locals()))
+    return menu
+
+
 def create_action(
-            id_=None,
+            name=None,
             text=None,
             icon=None,
             icon_text=None,
@@ -147,44 +170,45 @@ def create_action(
             checked=None,
             font=None,
             data=None,
-            parent=None,
-            triggered=None):
+            triggered=None,
+            parent=None):
     """
-    Action one liner support.
+    Action hero!
     """
-    result = QAction(parent=parent)
-    result.setObjectName(id_)
+    action = QAction(parent)
+    if name is not None:
+        action.setObjectName(name)
     if text is not None:
-        result.setText(text)
+        action.setText(text)
     if icon is not None:
-        result.setIcon (icon)
+        action.setIcon (icon)
     if icon_text is not None:
-        result.setIconText(icon_text)
+        action.setIconText(icon_text)
     if icon_in_menu is not None:
-        result.setIconVisibleInMenu(icon_in_menu)
+        action.setIconVisibleInMenu(icon_in_menu)
     if shortcut is not None:
-        result.setShortcut(shortcut)
+        action.setShortcut(shortcut)
     if tip is not None:
-        result.setToolTip(tip)
+        action.setToolTip(tip)
     if status_tip is not None:
-        result.setStatusTip(status_tip)
+        action.setStatusTip(status_tip)
     if what is not None:
-        result.setWhatsThis(what)
+        action.setWhatsThis(what)
     if visible is not None:
-        result.setVisible(visible)
+        action.setVisible(visible)
     if enabled is not None:
-        result.setEnabled(enabled)
+        action.setEnabled(enabled)
     if checkable is not None:
-        result.setCheckable(checkable)
+        action.setCheckable(checkable)
     if checked is not None:
-        result.setChecked(checked)
+        action.setChecked(checked)
     if font is not None:
-        result.setFont(font)
+        action.setFont(font)
     if data is not None:
-        result.setData(data)
+        action.setData(data)
     if triggered is not None:
-        result.triggered.connect(triggered)
-    return result
+        action.triggered.connect(triggered)
+    return action
 
 
 def dark_palette():

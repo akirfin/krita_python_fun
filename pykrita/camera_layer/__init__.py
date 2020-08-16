@@ -30,12 +30,13 @@ def add_PYTHONPATH():
 def load_plugins():
     """
     Make sure that depending plugins are registered.
-    """
+
     try:
         import layer_meta_data
         layer_meta_data.register()
     except:
         raise RuntimeError("Plugin dependency, layer_meta_data plugin is needed!")
+    """
 
 
 def register():
@@ -44,24 +45,14 @@ def register():
     Add extensions & dockers to Krita.
     """
     # add_PYTHONPATH()
-    load_plugins()
+    # load_plugins()  how to do this correctly ?
 
     from camera_layer.extension import \
             CameraLayerExtension
-    from camera_layer.data_types.camera_layer_data import \
-            CameraLayerData
-    from camera_layer.ui.camera_layer_widget import \
-            CameraLayerWidget
-    from layer_meta_data.ui.widget_mapper import \
-            widget_mapper
 
     app = Krita.instance()
     extension = CameraLayerExtension(app)
     app.addExtension(extension)
-
-    widget_mapper.register(
-            CameraLayerData,
-            CameraLayerWidget)
 
 
 def unregister():

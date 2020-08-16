@@ -34,7 +34,7 @@ def register():
     """
     # add_PYTHONPATH()
 
-    from .extension import FetchGalleryExtension
+    from fetch_gallery.extension import FetchGalleryExtension
 
     app = Krita.instance()
     app.addExtension(FetchGalleryExtension(app))

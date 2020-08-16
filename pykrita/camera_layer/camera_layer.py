@@ -174,3 +174,44 @@ class CameraLayer(QObject):
         data[self.meta_data_id] = self._camera_layer
         meta_data = serializer.dumps(data)
         set_layer_meta_data(self._node, meta_data)
+
+
+
+
+class CameraLayerNG(QObject):
+    def __init__(self, node):
+        self._data = CameraLayerData()
+        self._node = None
+        if node is not None:
+            self.node = node
+
+
+    def get_node(self):
+        return self._node
+
+
+    def set_node(self, new_node):
+        old_node = self.get_node()
+        if new_node != old_node:
+            if old_node is not None:
+                self.push_data(old_node, self._data)
+            self._node = new_node
+            if new_node is not None:
+                data = self.pull_data(new_node)
+                self._data = CameraLayerData() if data is None else data
+
+
+    @classmethod
+    def pull_data(cls, node):
+        data = get_layer_meta_data(node)
+        data = serializer.loads(data)
+        return data.get("camera_layer")
+
+
+    @classmethod
+    def push_data(cls, node, data):
+        json_data = get_layer_meta_data(node)
+        meta_data = serializer.loads(json_data)
+        meta_data["camera_layer"] = data
+        json_data = serializer.dumps(meta_data)
+        set_layer_meta_data(node, json_data)

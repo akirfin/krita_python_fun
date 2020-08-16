@@ -10,17 +10,22 @@ from urllib.parse import urlparse
 
 from krita import Krita, Extension
 
-from .common.utils_py import \
+from PyQt5.QtCore import \
+        QSettings
+
+from fetch_gallery.common.utils_py import \
         first, last, underscore
 
-from .common.utils_qt import \
-        walk_menu, fetch_qimage_from_url
+from fetch_gallery.common.utils_qt import \
+        fetch_qimage_from_url, make_menus, create_action
 
-from .common.utils_kis import \
+from fetch_gallery.common.utils_kis import \
         create_document_from_qimage
 
 
 class FetchGalleryExtension(Extension):
+    settings_path = "plugin_settings/fetch_gallery"
+
     gallery_url = "https://krita-artists.org/tag/featured"
     image_element_re = re.compile(r"<meta itemprop='image' content='(https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg)'>")
     limit = 4
@@ -30,18 +35,46 @@ class FetchGalleryExtension(Extension):
 
 
     def setup(self):
-        pass
+        """
+        Called once in Krita startup.
+        """
+        # hook app closing
+        notifier = Krita.instance().notifier()
+        notifier.applicationClosing.connect(self.shuttingDown)
+
+        settings = QSettings()
+        # some_value = settings.value(self.settings_path +"/some_name", defaultValue=?, type=?)
+
+        # create actions here and share "instance" to other places.
+        self._fetch_gallery_action = create_action(
+                name="fetch_gallery",
+                text="Fetch Gallery",
+                triggered=self.act_fetch_gallery,
+                parent=self)  # I own the action!
+
+
+    def shuttingDown(self):
+        """
+        Called once in Krita shutting down.
+        """
+        settings = QSettings()
+        # settings.setValue(self.settings_path +"/some_name", some_value)
 
 
     def createActions(self, window):
-        # menubar = window.qwindow().menuBar()
-        # first_tools = first(a for a, _ in walk_menu(menubar) if a.objectName() == "tools")
+        """
+        Called once for each new window opened in Krita.
+        """
+        menu_bar = window.qwindow().menuBar()
+        parent_menu = make_menus(
+                menu_bar,
+                [("tools", "&Tools"),
+                    ("experimental_plugins", "&Experimental Plugins")],
+                exist_ok=True)
 
-        # fetch_gallery_action = first_tools.menu().addAction("Fetch Gallery")
-        # fetch_gallery_action.setObjectName("fetch_gallery")
-        # fetch_gallery_action.triggered.connect(self.act_fetch_gallery)
-        fetch_gallery_action = window.createAction("fetch_gallery", "Fetch Gallery")
-        fetch_gallery_action.triggered.connect(self.act_fetch_gallery)
+        # add action "instance"
+        parent_menu.addAction(
+                self._fetch_gallery_action)
 
 
     def act_fetch_gallery(self, cheched=None):

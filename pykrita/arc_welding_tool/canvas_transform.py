@@ -8,12 +8,11 @@ from Qt.QtGui import \
 from Qt.QtWidgets import \
         QWidget, QMdiArea, QMdiSubWindow, QAbstractScrollArea
 
-from animaMattePainter.common.utils_py import \
+from arc_welding_tool.common.utils_py import \
         first, last
 
-from animaMattePainter.ui.utils_qt import \
+from arc_welding_tool.ui.utils_qt import \
         meta_cls_name, dump_tree, dump_transform, walk_qobject_ancestors
-
 
 
 ##

@@ -34,16 +34,11 @@ def register():
     """
     # add_PYTHONPATH()
 
-    # from .extension import LayerMetaDataExtension
+    from layer_meta_data.extension import LayerMetaDataExtension
 
-    # app = Krita.instance()
-    # app.addExtension(LayerMetaDataExtension(app))
-
-    from layer_meta_data.ui.layer_properties_hook import \
-            LayerPropertiesHook
-
-    if not LayerPropertiesHook.is_registered():
-        LayerPropertiesHook.register()
+    app = Krita.instance()
+    extension = LayerMetaDataExtension(app)
+    app.addExtension(extension)
 
 
 def unregister():
@@ -53,7 +48,7 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    from .ui.layer_properties_hook import \
+    from layer_meta_data.ui.layer_properties_hook import \
             LayerPropertiesHook
 
     if LayerPropertiesHook.is_registered():

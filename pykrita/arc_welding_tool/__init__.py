@@ -34,7 +34,7 @@ def register():
     """
     # add_PYTHONPATH()
 
-    from .extension import ArcWeldingToolExtension
+    from arc_welding_tool.extension import ArcWeldingToolExtension
 
     app = Krita.instance()
     app.addExtension(ArcWeldingToolExtension(app))
