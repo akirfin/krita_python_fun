@@ -3,7 +3,7 @@
 Fetch gallery
 
 ToDo:
-    - custom layer properties widget
+    - custom dialog
 
 """
 
@@ -118,8 +118,7 @@ class FetchGalleryExtension(Extension):
             name = name_ext.split(".")[0]
             create_document_from_qimage(qimage, name=name, add_view=True)
             if index >= self._load_limit:
-                break # limit reached!
-
+                break
         # and finally do nice layout.
         app = Krita.instance()
         app.action("windows_tile").trigger()

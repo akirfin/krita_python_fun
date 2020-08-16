@@ -2,7 +2,7 @@
 <h2>Fun with python in krita</h2>
 <p>--- Under construction ---</p>
 
-__version__ = 0.0.0
+__version__ = 0.0.1
 
 <p>Contains experimental example python plugins for Krita.
 May give some ideas how to do things.</p>
