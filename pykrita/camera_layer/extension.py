@@ -14,7 +14,7 @@ from PyQt5.QtCore import pyqtSignal as QSignal
 from PyQt5.QtCore import pyqtProperty as QProperty
 
 from PyQt5.QtCore import \
-        QObject, QSettings
+        QObject, QSettings, QTimer
 
 from PyQt5.QtGui import \
         QImage
@@ -88,9 +88,15 @@ class CameraLayerExtension(Extension):
 
     def createActions(self, window):
         """
+        Krita bug, in Linux. (create actions later.)
+        """
+        QTimer.singleShot(0, lambda menu_bar=window.qwindow().menuBar(): self.delayed_create_actions(menu_bar))
+
+
+    def delayed_create_actions(self, menu_bar):
+        """
         Called once for each new window opened in Krita.
         """
-        menu_bar = window.qwindow().menuBar()
         parent_menu = make_menus(
                 menu_bar,
                 self.parent_menu_path,

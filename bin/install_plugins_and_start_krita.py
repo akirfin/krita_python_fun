@@ -59,14 +59,14 @@ if __name__ == "__main__":
         trg_dir = pykrita_trg_dir(entry)
         if os.path.isdir(trg_dir):
             rmtree(trg_dir)
-            print(f'remove old folder\nrmtree("{trg_dir}")')
+            print('remove old folder\nrmtree("{trg_dir}")'.format(**locals()))
         copytree(src_dir, trg_dir)
-        print(f'copytree("{src_dir}",\n         "{trg_dir}")\n')
+        print('copytree("{src_dir}",\n         "{trg_dir}")\n'.format(**locals()))
 
     for entry in ("arc_welding_tool.desktop", "camera_layer.desktop", "fetch_gallery.desktop", "layer_meta_data.desktop"):
         src_dsk = pykrita_src_dir(entry)
         copy2(src_dsk, krita_resource_dir)
-        print(f'copy2("{src_dsk}",\n      "{krita_resource_dir}")\n')
+        print('copy2("{src_dsk}",\n      "{krita_resource_dir}")\n'.format(**locals()))
 
     print("\nrun_krita()\n")
     run_krita()

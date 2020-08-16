@@ -14,7 +14,7 @@ from urllib.parse import urlparse
 from krita import Krita, Extension
 
 from PyQt5.QtCore import \
-        QSettings
+        QSettings, QTimer
 
 from layer_meta_data.common.utils_py import \
         first, last, underscore
@@ -65,6 +65,7 @@ class LayerMetaDataExtension(Extension):
         # set initial state
         self.show_meta_data(show_meta_data)
 
+
     def shuttingDown(self):
         """
         Called once in Krita shutting down.
@@ -77,9 +78,15 @@ class LayerMetaDataExtension(Extension):
 
     def createActions(self, window):
         """
+        Krita bug, in Linux. (create actions later.)
+        """
+        QTimer.singleShot(0, lambda menu_bar=window.qwindow().menuBar(): self.delayed_create_actions(menu_bar))
+
+
+    def delayed_create_actions(self, menu_bar):
+        """
         Called once for each new window opened in Krita.
         """
-        menu_bar = window.qwindow().menuBar()
         parent_menu = make_menus(
                 menu_bar,
                 self.parent_menu_path,

@@ -9,7 +9,7 @@ Arc Welding! (now we're cooking with GAS)
 from krita import Krita, Extension
 
 from PyQt5.QtCore import \
-        QSettings
+        QSettings, QTimer
 
 from arc_welding_tool.common.utils_py import \
         first, last, underscore
@@ -65,11 +65,17 @@ class ArcWeldingToolExtension(Extension):
 
     def createActions(self, window):
         """
+        Krita bug, in Linux. (create actions later.)
+        """
+        QTimer.singleShot(0, lambda menu_bar=window.qwindow().menuBar(): self.delayed_create_actions(menu_bar))
+
+
+    def delayed_create_actions(self, menu_bar):
+        """
         Called once for each new window opened in Krita.
         """
         self._arc_welding_tool_context = particle.System()
 
-        menu_bar = window.qwindow().menuBar()
         parent_menu = make_menus(
                 menu_bar,
                 self.parent_menu_path,
