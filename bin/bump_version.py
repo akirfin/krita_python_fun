@@ -12,6 +12,9 @@ if __name__ == "__main__":
     version_re = re.compile(r"__version__\s*=\s*[\"']?(\d+\.\d+\.\d+)[\"']?")
 
     for parent, folders, files in os.walk(project_dir):
+        # prune hidden
+        folders[:] = (f for f in folders if not f.startswith("."))
+        files[:] = (f for f in files if not f.startswith("."))
         for file_name in files:
             if file_name.endswith((".py", ".md")):
                 file_path = os.path.join(parent, file_name)
