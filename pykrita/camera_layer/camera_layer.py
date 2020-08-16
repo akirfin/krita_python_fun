@@ -58,7 +58,10 @@ class CameraLayer(QObject):
         self._camera_layer_data = CameraLayerData()
         self._node = None
 
-        cam_info = QCameraInfo.availableCameras()[0]
+        try:
+            cam_info = QCameraInfo.availableCameras()[0]
+        except:
+            raise RuntimeError("Can't find first available Camera!")
         cam_info_desc = cam_info.description()
         # self.appendPlainText("First camera device connected to computer: {cam_info_desc}".format(**locals()))
 

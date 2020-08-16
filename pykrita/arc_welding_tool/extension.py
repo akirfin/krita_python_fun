@@ -1,8 +1,10 @@
 """
 
-let's have some fun with python coding 03
-
 Arc Welding! (now we're cooking with GAS)
+
+ToDo:
+    - view/canvas trapping
+    - using canvas_transform to solve transform.
 
 """
 

@@ -1,6 +1,9 @@
 """
 
-Let’s have some fun with python coding 01
+Fetch gallery
+
+ToDo:
+    - custom layer properties widget
 
 """
 

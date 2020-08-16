@@ -1,3 +1,24 @@
+"""
+
+Sharing readme.md with Krita in plugin documentations.
+
+Write readme.md documents and use relative image paths, then run this script for document.
+adds embeded images to doument ie:
+    <img src="./relative_path/to_image.jpg" source="base64 embeded image..."/>
+
+Why so complicated...
+- filename must be "readme.md"
+- Krita QTextBrowser and GitHub both accept HTML.
+- QTextBrowser can't handle relative image paths (QTextBrowser local path not set)
+- QTextBrowser absolute path of installed document is unknown
+- GitHub works best if relative path is used
+- QTextBrowser can use special "source" attribute vs. HTML "src" attribute
+- QTextBrowser accepts base64 embeded images
+- GitHub can't use base64 embeded images
+- bonus: for both "nice" image resolution is different.
+
+"""
+
 from Qt.QtCore import Qt, QIODevice, QByteArray, QBuffer
 from Qt.QtGui import QImage
 
@@ -42,8 +63,8 @@ if __name__ == '__main__':
     #    577)
     # print(img_tag)
 
-    img_tag = embeded_image_scale_to_width(
-        r"D:\projects\krita_python_fun\pykrita\layer_meta_data\resources\title_image.jpg",
-        "./resources/title_image.jpg",
-        577)
-    print(img_tag)
+    #img_tag = embeded_image_scale_to_width(
+    #    r"D:\projects\krita_python_fun\pykrita\layer_meta_data\resources\title_image.jpg",
+    #    "./resources/title_image.jpg",
+    #    577)
+    #print(img_tag)

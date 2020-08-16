@@ -1,8 +1,9 @@
 """
 
-Let’s have some fun with python coding 02
-
 I can see you!
+
+ToDo:
+    - handle custom layer properties widget
 
 """
 

@@ -2,9 +2,8 @@
 
 Layer meta data extension
 
-Note:
-    - this module is currently unused. (no user interface needed?)
-
+ToDo:
+    - option to suppress JSON path in widget_mapper (used when custom layer properties widget exits.)
 """
 
 import re
