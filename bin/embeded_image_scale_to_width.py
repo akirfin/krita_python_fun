@@ -2,7 +2,7 @@
 
 Sharing readme.md with Krita in plugin documentations.
 
-Write readme.md documents and use relative image paths, then run this script for document.
+Write readme.md document and use html and relative image paths, then run this script for document.
 adds embeded images to doument ie:
     <img src="./relative_path/to_image.jpg" source="base64 embeded image..."/>
 
