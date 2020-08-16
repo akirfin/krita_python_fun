@@ -6,7 +6,9 @@ from layer_meta_data.layer_meta_data import \
         get_layer_meta_data, set_layer_meta_data
 
 node = Krita.instance().activeDocument().activeNode()
-set_layer_meta_data(node, "posssuusu")
+set_layer_meta_data(node, "my nice meta dada duu!")
+
+data = get_layer_meta_data(node)
 
 """
 

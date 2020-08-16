@@ -6,6 +6,7 @@ from camera_layer.layer_properties.layer_properties_hook import \
         LayerPropertiesHook
 
 LayerPropertiesHook.register()
+
 """
 
 from collections import OrderedDict as oDict

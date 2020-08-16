@@ -1,8 +1,9 @@
 """
 
-Let’s have some fun with python coding 02
-
-I can see you!
+ToDo:
+    - cleaning!
+    - re-write to CameraLayerNG
+    - solve QTransform & how to serialize
 
 """
 
