@@ -28,11 +28,14 @@ from layer_meta_data.ui.layer_properties_hook import \
 
 class LayerMetaDataExtension(Extension):
     settings_path = "plugin_settings/layer_meta_data"
+    show_meta_data_setting = settings_path + "/show_meta_data"
 
+    parent_menu_path = (
+            ("tools", "&Tools"),
+                ("experimental_plugins", "&Experimental Plugins"))
 
     def __init__(self, parent):
         super(LayerMetaDataExtension, self).__init__(parent)
-        self._show_meta_data_state = False
 
 
     def setup(self):
@@ -43,10 +46,10 @@ class LayerMetaDataExtension(Extension):
         notifier = Krita.instance().notifier()
         notifier.applicationClosing.connect(self.shuttingDown)
 
-        # or is this done automaticaly for registered actions using .action file?
+        # when is .action file applied?
         settings = QSettings()
-        self._show_meta_data_state = settings.value(
-                self.settings_path +"/show_meta_data_state",
+        show_meta_data = settings.value(
+                self.show_meta_data_setting,
                 defaultValue=True,
                 type=bool)
 
@@ -55,13 +58,12 @@ class LayerMetaDataExtension(Extension):
                 name="show_meta_data",
                 text="Show Meta Data",
                 checkable=True,
-                checked=self._show_meta_data_state,
+                checked=show_meta_data,
                 triggered=self.show_meta_data,
                 parent=self)  # I own the action!
 
         # set initial state
-        self.show_meta_data(self._show_meta_data_state)
-
+        self.show_meta_data(show_meta_data)
 
     def shuttingDown(self):
         """
@@ -69,8 +71,8 @@ class LayerMetaDataExtension(Extension):
         """
         settings = QSettings()
         settings.setValue(
-                self.settings_path +"/show_meta_data_state",
-                self._show_meta_data_state)
+                self.show_meta_data_setting,
+                self._show_meta_data_action.isChecked())
 
 
     def createActions(self, window):
@@ -80,8 +82,7 @@ class LayerMetaDataExtension(Extension):
         menu_bar = window.qwindow().menuBar()
         parent_menu = make_menus(
                 menu_bar,
-                [("tools", "&Tools"),
-                    ("experimental_plugins", "&Experimental Plugins")],
+                self.parent_menu_path,
                 exist_ok=True)
 
         # add action "instance"
@@ -91,10 +92,8 @@ class LayerMetaDataExtension(Extension):
 
     def show_meta_data(self, checked=None):
         if (checked is None) or (checked is True):
-            self._show_meta_data_state = True
             if not LayerPropertiesHook.is_registered():
                 LayerPropertiesHook.register()
         else:
-            self._show_meta_data_state = False
             if LayerPropertiesHook.is_registered():
                 LayerPropertiesHook.unregister()

@@ -25,10 +25,14 @@ from fetch_gallery.common.utils_kis import \
 
 class FetchGalleryExtension(Extension):
     settings_path = "plugin_settings/fetch_gallery"
+    gallery_url_setting = settings_path + "/gallery_url"
+    load_limit_setting = settings_path + "/load_limit"
+    image_element_re_setting = settings_path + "/image_element_re"
 
-    gallery_url = "https://krita-artists.org/tag/featured"
-    image_element_re = re.compile(r"<meta itemprop='image' content='(https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg)'>")
-    limit = 4
+    parent_menu_path = (
+            ("tools", "&Tools"),
+                ("experimental_plugins", "&Experimental Plugins"))
+
 
     def __init__(self, parent):
         super(FetchGalleryExtension, self).__init__(parent)
@@ -42,14 +46,26 @@ class FetchGalleryExtension(Extension):
         notifier = Krita.instance().notifier()
         notifier.applicationClosing.connect(self.shuttingDown)
 
+        # when is .action file applied?
         settings = QSettings()
-        # some_value = settings.value(self.settings_path +"/some_name", defaultValue=?, type=?)
+        self._gallery_url = settings.value(
+                self.gallery_url_setting,
+                defaultValue="https://krita-artists.org/tag/featured",
+                type=str)
+        self._image_element_re = re.compile(settings.value(
+                self.image_element_re_setting,
+                defaultValue=r"<meta itemprop='image' content='(https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg)'>",
+                type=str))
+        self._load_limit = settings.value(
+                self.load_limit_setting,
+                defaultValue=4,
+                type=int)
 
         # create actions here and share "instance" to other places.
         self._fetch_gallery_action = create_action(
                 name="fetch_gallery",
                 text="Fetch Gallery",
-                triggered=self.act_fetch_gallery,
+                triggered=self.fetch_gallery,
                 parent=self)  # I own the action!
 
 
@@ -58,7 +74,15 @@ class FetchGalleryExtension(Extension):
         Called once in Krita shutting down.
         """
         settings = QSettings()
-        # settings.setValue(self.settings_path +"/some_name", some_value)
+        settings.setValue(
+                self.gallery_url_setting,
+                self._gallery_url)
+        settings.setValue(
+                self.image_element_re_setting,
+                self._image_element_re.pattern)
+        settings.setValue(
+                self.load_limit_setting,
+                self._load_limit)
 
 
     def createActions(self, window):
@@ -68,8 +92,7 @@ class FetchGalleryExtension(Extension):
         menu_bar = window.qwindow().menuBar()
         parent_menu = make_menus(
                 menu_bar,
-                [("tools", "&Tools"),
-                    ("experimental_plugins", "&Experimental Plugins")],
+                self.parent_menu_path,
                 exist_ok=True)
 
         # add action "instance"
@@ -77,15 +100,17 @@ class FetchGalleryExtension(Extension):
                 self._fetch_gallery_action)
 
 
-    def act_fetch_gallery(self, cheched=None):
-        r = request.urlopen(self.gallery_url)
+    def fetch_gallery(self, cheched=None):
+        r = request.urlopen(self._gallery_url)
         text = r.read().decode('utf-8')
-        for index, image_url in enumerate(self.image_element_re.findall(text)):
+        for index, image_url in enumerate(self._image_element_re.findall(text)):
             qimage = fetch_qimage_from_url(image_url)
             name_ext = urlparse(image_url).path.rsplit("/")[-1]
             name = name_ext.split(".")[0]
             create_document_from_qimage(qimage, name=name, add_view=True)
-            if index >= self.limit:
+            if index >= self._load_limit:
                 break # limit reached!
+
+        # and finally do nice layout.
         app = Krita.instance()
         app.action("windows_tile").trigger()

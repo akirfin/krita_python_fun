@@ -11,9 +11,6 @@ from krita import Krita, Extension
 from PyQt5.QtCore import \
         QSettings
 
-from PyQt5.QtWidgets import \
-        QMessageBox
-
 from arc_welding_tool.common.utils_py import \
         first, last, underscore
 
@@ -29,6 +26,11 @@ class ArcWeldingToolExtension(Extension):
     (this NOT official way to add new tools.)
     """
     settings_path = "plugin_settings/arc_welding_tool"
+    # some_setting = settings_path +"/some"
+
+    parent_menu_path = (
+            ("tools", "&Tools"),
+                ("experimental_plugins", "&Experimental Plugins"))
 
     def __init__(self, parent):
         super(ArcWeldingToolExtension, self).__init__(parent)
@@ -43,13 +45,13 @@ class ArcWeldingToolExtension(Extension):
         notifier.applicationClosing.connect(self.shuttingDown)
 
         settings = QSettings()
-        # some_value = settings.value(self.settings_path +"/some_name", defaultValue=?, type=?)
+        # self._some_value = settings.value(self.some_setting, defaultValue=, type=)
 
         # create actions here and share "instance" to other places.
         self._activate_arc_welding_action = create_action(
                 name="activate_arc_welding",
                 text="Activate Arc Welding",
-                triggered=self.act_activate_arc_welding,
+                triggered=self.activate_arc_welding,
                 parent=self)  # I own the action!
 
 
@@ -58,7 +60,7 @@ class ArcWeldingToolExtension(Extension):
         Called once in Krita shutting down.
         """
         settings = QSettings()
-        # settings.setValue(self.settings_path +"/some_name", some_value)
+        # settings.setValue(self.some_setting, self._some_value)
 
 
     def createActions(self, window):
@@ -70,8 +72,7 @@ class ArcWeldingToolExtension(Extension):
         menu_bar = window.qwindow().menuBar()
         parent_menu = make_menus(
                 menu_bar,
-                [("tools", "&Tools"),
-                    ("experimental_plugins", "&Experimental Plugins")],
+                self.parent_menu_path,
                 exist_ok=True)
 
         # add action "instance"
@@ -79,9 +80,8 @@ class ArcWeldingToolExtension(Extension):
                 self._activate_arc_welding_action)
 
 
-    def act_activate_arc_welding(self, checked=None):
+    def activate_arc_welding(self, checked=None):
         """
         activate arc welding tool.
         """
         self._arc_welding_tool_context.show()
-        # ok = QMessageBox.information(None, "Arc welding tool (sorry)", "Sorry, Welding tool is under construction :(")

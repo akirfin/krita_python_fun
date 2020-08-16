@@ -96,7 +96,10 @@ class CameraLayer(QObject):
             ptr.setsize(preview.byteCount())
             self._node.setPixelData(bytes(ptr.asarray()), 0, 0, preview.width(), preview.height())
             document = find_document_for(self._node)
-            document.refreshProjection()
+            if document is None:
+                self._camera.stop()
+            else:
+                document.refreshProjection()
 
 
     def on_camera_error(self, error):
@@ -174,8 +177,6 @@ class CameraLayer(QObject):
         data[self.meta_data_id] = self._camera_layer
         meta_data = serializer.dumps(data)
         set_layer_meta_data(self._node, meta_data)
-
-
 
 
 class CameraLayerNG(QObject):

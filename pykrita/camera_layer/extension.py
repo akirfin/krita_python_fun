@@ -48,6 +48,11 @@ class CameraLayerExtension(Extension):
     (this NOT official way to add layer types.)
     """
     settings_path = "plugin_settings/camera_layer"
+    # some_setting = settings_path +"/some"
+
+    parent_menu_path = (
+            ("tools", "&Tools"),
+                ("experimental_plugins", "&Experimental Plugins"))
 
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)
@@ -63,7 +68,7 @@ class CameraLayerExtension(Extension):
         notifier.applicationClosing.connect(self.shuttingDown)
 
         settings = QSettings()
-        # some_value = settings.value(self.settings_path +"/some_name", defaultValue=?, type=?)
+        # self._some_value = settings.value(self.some_setting, defaultValue=, type=)
 
         # create actions here and share "instance" to other places.
         self._create_camera_layer_action = create_action(
@@ -78,7 +83,7 @@ class CameraLayerExtension(Extension):
         Called once in Krita shutting down.
         """
         settings = QSettings()
-        # settings.setValue(self.settings_path +"/some_name", some_value)
+        # settings.setValue(self.some_setting, self._some_value)
 
 
     def createActions(self, window):
@@ -88,8 +93,7 @@ class CameraLayerExtension(Extension):
         menu_bar = window.qwindow().menuBar()
         parent_menu = make_menus(
                 menu_bar,
-                [("tools", "&Tools"),
-                    ("experimental_plugins", "&Experimental Plugins")],
+                self.parent_menu_path,
                 exist_ok=True)
 
         # add action "instance"
