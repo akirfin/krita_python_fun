@@ -7,6 +7,7 @@ __version__ = 0.0.1
 <p>Contains experimental example python plugins for Krita.
 May give some ideas how to do things.</p>
 
+<hr>
 <h3>How to install</h3>
 <pre>
 ```
@@ -20,24 +21,33 @@ copy files and folders from ./pykrita to
 `KRITA_PLUGINS_PATH="/path/myplugins:/more/plugins:~/dev/krita_python_fun"`,
 pleeease!, cherry on top!)</p>
 
+<hr>
 
+<img src="./pykrita/arc_welding_tool/resources/title_image.jpg"/>
 <h3>arc_welding_tool</h3>
 <p>How to add new tool to Krita.
 Add button to toolbar
 Show tool context gizmo in viewport.</p>
+<hr>
 
+<img src="./pykrita/camera_layer/resources/title_image.jpg"/>
 <h3>camera_layer</h3>
 <p>Custom layer node that pulls pixels from camera.</p>
+<hr>
 
+<img src="./pykrita/fetch_gallery/resources/title_image.jpg"/>
 <h3>fetch_gallery</h3>
 <p>Fetch image data from url to QImage,
 and then push QImage to layer node.</p>
+<hr>
 
+<img src="./pykrita/layer_meta_data/resources/title_image.jpg"/>
 <h3>layer_meta_data</h3>
 <p>show extra secton in layer properties.
 JSON tree of user defined settings.
 (currntly JSON is stored in DublinCore.publisher field.)
 (note: Krita bug in DublinCore.description, it is NOT saved!)</p>
+<hr>
 
 <h3>future ideas</h3>
 <p>Krita Shelfs: place scripts, actions with settings, filepaths, then just click or drag & drop to target
@@ -47,5 +57,6 @@ PixFika layer: Shadertoy + glsl sandbox + PixFika compatible layer
 Tutor: interactive drawing tutor
 Multi user Krita: One document multiple interactive users. (sync layers + show fake cursors)
 PyKrita Unit test runner</p>
+<hr>
 
 </html>
