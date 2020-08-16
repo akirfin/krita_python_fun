@@ -6,7 +6,7 @@ __version__ = 0.0.0
 May give some ideas how to do things.</p>
 
 <h3>How to install</h3>
-<hr size=1>
+<hr size="1">
 <pre>
 ```
 copy files and folders from ./pykrita to
@@ -20,29 +20,29 @@ copy files and folders from ./pykrita to
 pleeease!, cherry on top!)</p>
 
 <h3>arc_welding_tool</h3>
-<hr size=1>
+<hr size="1">
 <p>How to add new tool to Krita.
 Add button to toolbar
 Show tool context gizmo in viewport.</p>
 
 <h3>camera_layer</h3>
-<hr size=1>
+<hr size="1">
 <p>Custom layer node that pulls pixels from camera.</p>
 
 <h3>fetch_gallery</h3>
-<hr size=1>
+<hr size="1">
 <p>Fetch image data from url to QImage,
 and then push QImage to layer node.</p>
 
 <h3>layer_meta_data</h3>
-<hr size=1>
+<hr size="1">
 <p>show extra secton in layer properties.
 JSON tree of user defined settings.
 (currntly JSON is stored in DublinCore.publisher field.)
 (note: Krita bug in DublinCore.description, it is NOT saved!)</p>
 
 <h3>future ideas</h3>
-<hr size=1>
+<hr size="1">
 <p>Krita Shelfs: place scripts, actions with settings, filepaths, then just click or drag & drop to target
 OpenStreetMap layer: fetch any place on earth!
 glTF layer: show glTF in layer or use layers as textures?
