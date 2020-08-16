@@ -39,8 +39,9 @@ JSON tree of user defined settings.
 (note: Krita bug in DublinCore.description, it is NOT saved!)
 
 ## future ideas
-OpenStreetMap for krita
-glTF layer ??? (show glTF in layer or use layers as textures?)
-PixFika for Krita: (Shadertoy + glsl sandbox + PixFika)
+Krita Shelfs: place scripts, actions with settings, filepaths, then just click or drag & drop to target
+OpenStreetMap layer: fetch any place on earth!
+glTF layer: show glTF in layer or use layers as textures?
+PixFika layer: Shadertoy + glsl sandbox + PixFika compatible layer
 Tutor: interactive drawing tutor
 Multi user Krita: One document multiple interactive users. (sync layers + show fake cursors)
