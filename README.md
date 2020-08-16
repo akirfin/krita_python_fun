@@ -3,6 +3,8 @@ Fun with python in krita
 
 --- Under construction ---
 
+__version__ = 0.0.0
+
 Contains experimental example python plugins for Krita.
 May give some ideas how to do things.
 
