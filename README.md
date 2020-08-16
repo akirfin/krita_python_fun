@@ -29,3 +29,9 @@ Custom layer node that pulls pixels from camera.
 ## fetch_gallery
 Fetch image data from url to QImage,
 and then push QImage to layer node.
+
+## layer_meta_data
+show extra secton in layer properties.
+JSON tree of user defined settings.
+(currntly JSON is stored in DublinCore.publisher field.)
+(note: Krita bug in DublinCore.description, it is NOT saved!)
