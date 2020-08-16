@@ -22,8 +22,8 @@ pleeease!, cherry on top!)</p>
 <hr>
 
 <h3>arc_welding_tool</h3>
-<p><img src="./pykrita/arc_welding_tool/resources/title_image.jpg"/></p>
-<p>How to add new tool to Krita.
+<p><img src="./pykrita/arc_welding_tool/resources/title_image.jpg"/>
+How to add new tool to Krita.
 Add button to toolbar
 Show tool context gizmo in viewport.</p>
 <hr>
