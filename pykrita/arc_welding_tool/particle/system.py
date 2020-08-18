@@ -3,10 +3,21 @@ from random import random
 from contextlib import contextmanager
 
 from PyQt5.QtCore import Qt
-from PyQt5.QtCore import QTime, QDateTime, QUrl, QFileInfo
-from PyQt5.QtGui import QPainter, QVector2D, QColor, QPen, QCursor
-from PyQt5.QtWidgets import QWidget
-from PyQt5.QtMultimedia import QSoundEffect
+from PyQt5.QtCore import pyqtSlot as QSlot
+from PyQt5.QtCore import pyqtSignal as QSignal
+from PyQt5.QtCore import pyqtProperty as QProperty
+
+from PyQt5.QtCore import \
+        QTime, QDateTime, QUrl, QFileInfo
+
+from PyQt5.QtGui import \
+        QPainter, QVector2D, QColor, QPen, QCursor, QTransform
+
+from PyQt5.QtWidgets import \
+        QWidget
+
+from PyQt5.QtMultimedia import \
+        QSoundEffect
 
 from arc_welding_tool.common.utils_qt import \
         create_painter, keep_painter
@@ -21,21 +32,22 @@ class System(QWidget):
     """
 
     fps = int(1000 / 30)  # 30fps
+    sound_file = QUrl.fromLocalFile("audio:arc_welding.wav")
 
     def __init__(self, parent=None):
         super(System, self).__init__(parent=parent)
         self._clouds = [Cloud(10000)]  # just one cloud.
         self._last_time = QDateTime.currentMSecsSinceEpoch()
         self._last_positions = [QVector2D() for _ in range(20)]
+        self._transform = QTransform()
         self.setMouseTracking(True)
         self.create_ui()
         self.startTimer(self.fps)
 
 
     def create_ui(self):
-        file_path = QUrl.fromLocalFile("./arc_welding.wav")
         self._welding_sound = QSoundEffect()
-        self._welding_sound.setSource(file_path)
+        self._welding_sound.setSource(self.sound_file)
         self._welding_sound.setLoopCount(QSoundEffect.Infinite)
         self._welding_sound.setVolume(0.0)
         self._welding_sound.play()
@@ -72,6 +84,8 @@ class System(QWidget):
         Colorspace math is broken.
         """
         with create_painter(self) as painter:
+            inv, success = self._transform.inverted()
+            painter.setTransform(inv)  # setWorldTransform
             painter.setRenderHint(QPainter.Antialiasing)
             painter.setCompositionMode(QPainter.CompositionMode_Plus)
             pen = QPen()
@@ -98,3 +112,20 @@ class System(QWidget):
             cloud.simulate(delta_time)
         self.update()
         return super(System, self).timerEvent(event)
+
+
+    def get_transform(self):
+        return QTransform(self._transform)
+
+
+    @QSlot(QTransform)
+    def set_transform(self, new_transform):
+        new_transform = QTransform(new_transform)
+        old_transform = self.get_transform()
+        if new_transform != old_transform:
+            self._transform = new_transform
+            self.transform_changed.emit(self.get_transform())
+
+
+    transform_changed = QSignal(QTransform)
+    transform = QProperty(QTransform, fget=get_transform, fset=set_transform, notify=transform_changed)

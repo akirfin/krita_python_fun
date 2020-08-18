@@ -1,24 +1,25 @@
+"""
+
+about 100 lines of code just get one 3x3 matrix... (I don't feel like a winner.)
+
+"""
+
 from contextlib import contextmanager
 
 from krita import Krita, Canvas
 
-from Qt.QtGui import \
+from PyQt5.QtGui import \
         QTransform
 
-from Qt.QtWidgets import \
+from PyQt5.QtWidgets import \
         QWidget, QMdiArea, QMdiSubWindow, QAbstractScrollArea
 
 from arc_welding_tool.common.utils_py import \
         first, last
 
-from arc_welding_tool.ui.utils_qt import \
-        meta_cls_name, dump_tree, dump_transform, walk_qobject_ancestors
+from arc_welding_tool.common.utils_qt import \
+        walk_qobject_ancestors
 
-
-##
-#
-# about 100 lines of code just get one 3x3 matrix... (I don't feel like a winner.)
-#
 
 def find_qviews_area(qwindow):
     """
@@ -27,7 +28,7 @@ def find_qviews_area(qwindow):
     # first try to find any KisView, then backup to ancestor QMdiArea
     for qmdi_win in qwindow.findChildren(QMdiSubWindow):
         qview = qmdi_win.widget()
-        if meta_cls_name(qview) == "KisView":
+        if qview.metaObject().className() == "KisView":
             for anc in walk_qobject_ancestors(qmdi_win):
                 if isinstance(anc, QMdiArea):
                     return anc
@@ -41,9 +42,9 @@ def find_qviews_area(qwindow):
 
 def find_qcanvas(qview):
     for qview_child in qview.findChildren(QAbstractScrollArea):
-        if meta_cls_name(qview_child) == "KisCanvasController":
+        if qview_child.metaObject().className() == "KisCanvasController":
             for viewport_child in qview_child.viewport().children():
-                meta_name = meta_cls_name(viewport_child)
+                meta_name = viewport_child.metaObject().className()
                 if meta_name.startswith("Kis") and ("Canvas" in meta_name):
                     return viewport_child
 
@@ -82,7 +83,7 @@ def _get_canvas_mapping_cache():
             for qsub in qviews_area.subWindowList():
                 qviews_area.setActiveSubWindow(qsub)
                 qview = qsub.widget()
-                if meta_cls_name(qview) == "KisView":
+                if qview.metaObject().className() == "KisView":
                     # this qview is now active, get matching active view.canvas
                     active_canvas = window.activeView().canvas()
                     active_qcanvas = find_qcanvas(qview)
@@ -117,7 +118,7 @@ def get_canvas_translate(canvas):
 
     qcanvas = get_canvas_qcanvas(canvas)
     for anc in walk_qobject_ancestors(qcanvas):
-        if isinstance(anc, QAbstractScrollArea) and meta_cls_name(anc) == "KisCanvasController":
+        if isinstance(anc, QAbstractScrollArea) and anc.metaObject().className() == "KisCanvasController":
             x_offset = bar_offset(anc.horizontalScrollBar())
             y_offset = bar_offset(anc.verticalScrollBar())
             return (x_offset, y_offset)
