@@ -9,7 +9,7 @@ from PyQt5.QtGui import \
         QPainter, QPalette, QColor, QImage
 
 from PyQt5.QtWidgets import \
-        QAction
+        QAction, QMenu
 
 from .utils_py import \
         print_console, first, last
@@ -41,34 +41,6 @@ def dump_qobject_tree(qobj):
         except:
             pass
         print_console("{indent}objectName: \"{name}\", text: \"{text}\", cls: {cls}, meta_cls: {meta_cls}".format(**locals()))
-
-
-def dump_menu(menu):
-    """
-    Dump QMenu item hierarchy.
-    menubar = Krita.instance().activeWindow().qwindow().menuBar()
-    """
-    for act, depth in walk_menu(menu):
-        indent = depth * "    "
-        name = act.objectName()
-        text = act.text() or ""
-        cls = type(act)
-        print('{indent}("{name}", "{text}")'.format(**locals()))
-
-
-def walk_menu(qmenu):
-    """
-    Menu contains actions,
-        and some actions have a menu,
-            and it contains actions ...
-    """
-    stack = list((a, 0) for a in qmenu.actions())
-    while stack:
-        act, depth = stack.pop(0)
-        yield act, depth
-        sub_menu = act.menu()
-        if sub_menu:
-            stack[0:0] = ((a, depth +1) for a in sub_menu.actions())
 
 
 def walk_qobjects(qobjs, depth_first=True):
@@ -134,23 +106,50 @@ def block_signals(*objs, state=True):
             obj.blockSignals(old_state)
 
 
-def make_menus(menu_root, menu_entry_path, exist_ok=True):
+def dump_menu(menu):
     """
-    menu_entry_path = [(menu_object_name, title), ...]
+    Dump QMenu item hierarchy.
+    menubar = Krita.instance().activeWindow().qwindow().menuBar()
     """
-    menu = menu_root
-    for name, title in menu_entry_path:
-        menu_action = first((a for a in menu.actions() if a.objectName() == name), None)
-        if menu_action is None:
-            # missing, create
-            menu = menu.addMenu(title)
-            menu.setObjectName(name +"_menu")
-            menu_action = menu.menuAction()
-            menu_action.setObjectName(name)
-        elif exist_ok:
-            menu = menu_action.menu()
-        else:
-            raise RuntimeError("Menu entry already exist! (did get: name={name!r}, title={title!r})".format(**locals()))
+    for act, depth in walk_menu(menu):
+        indent = depth * "    "
+        name = act.objectName()
+        text = act.text() or ""
+        cls = type(act)
+        print('{indent}("{name}", "{text}")'.format(**locals()))
+
+
+def walk_menu(qmenu):
+    """
+    Menu contains actions,
+        and some actions have a menu,
+            and it contains actions ...
+    """
+    stack = list((a, 0) for a in qmenu.actions())
+    while stack:
+        act, depth = stack.pop(0)
+        yield act, depth
+        sub_menu = act.menu()
+        if sub_menu:
+            stack[0:0] = ((a, depth +1) for a in sub_menu.actions())
+
+
+def find_menu(root_menu, menu_path):
+    menu = root_menu
+    for entry in menu_path.strip("/").split("/"):
+        menu = first((a.menu() for a in menu.actions() if a.objectName() == entry), None)
+        if menu is None:
+            break  # no point to continue!
+    return menu
+
+
+def create_menu(
+            name,
+            title,
+            parent=None):
+    menu = QMenu(title, parent=parent)
+    menu.setObjectName(name)
+    menu.menuAction().setObjectName(name)
     return menu
 
 

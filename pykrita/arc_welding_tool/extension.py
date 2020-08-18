@@ -19,7 +19,7 @@ from arc_welding_tool.common.utils_py import \
         first, last, underscore
 
 from arc_welding_tool.common.utils_qt import \
-        make_menus, create_action
+        find_menu, create_menu, create_action
 
 from arc_welding_tool.canvas_transform import \
         get_canvas_transform, get_canvas_qcanvas
@@ -35,10 +35,6 @@ class ArcWeldingToolExtension(Extension):
     """
     settings_path = "plugin_settings/arc_welding_tool"
     # some_setting = settings_path +"/some"
-
-    parent_menu_path = (
-            ("tools", "&Tools"),
-                ("experimental_plugins", i18n("&Experimental Plugins")))
 
     def __init__(self, parent):
         super(ArcWeldingToolExtension, self).__init__(parent)
@@ -75,24 +71,18 @@ class ArcWeldingToolExtension(Extension):
 
     def createActions(self, window):
         """
-        Krita bug, in Linux. (create actions later.)
-        """
-        QTimer.singleShot(0, lambda menu_bar=window.qwindow().menuBar(): self.delayed_create_actions(menu_bar))
-
-
-    def delayed_create_actions(self, menu_bar):
-        """
         Called once for each new window opened in Krita.
         """
-        self._arc_welding_tool_context = particle.System()
-        parent_menu = make_menus(
-                menu_bar,
-                self.parent_menu_path,
-                exist_ok=True)
+        menu_bar = window.qwindow().menuBar()
+
+        tools_menu = find_menu(menu_bar, "tools")
+        experimental_menu = find_menu(tools_menu, "experimental")
+        if experimental_menu is None:
+            experimental_menu = create_menu("experimental", i18n("Experimental"), parent=tools_menu)
+            tools_menu.addAction(experimental_menu.menuAction())
 
         # add action "instance"
-        parent_menu.addAction(
-                self._activate_arc_welding_action)
+        experimental_menu.addAction(self._activate_arc_welding_action)
 
 
     def activate_arc_welding(self, checked=None):

@@ -23,7 +23,7 @@ from fetch_gallery.common.utils_py import \
         first, last, underscore
 
 from fetch_gallery.common.utils_qt import \
-        fetch_qimage_from_url, make_menus, create_action
+        fetch_qimage_from_url, find_menu, create_menu, create_action
 
 from fetch_gallery.common.utils_kis import \
         create_document_from_qimage
@@ -34,11 +34,6 @@ class FetchGalleryExtension(Extension):
     gallery_url_setting = settings_path + "/gallery_url"
     load_limit_setting = settings_path + "/load_limit"
     image_element_re_setting = settings_path + "/image_element_re"
-
-    parent_menu_path = (
-            ("tools", "&Tools"),
-                ("experimental_plugins", i18n("&Experimental Plugins")))
-
 
     def __init__(self, parent):
         super(FetchGalleryExtension, self).__init__(parent)
@@ -93,23 +88,18 @@ class FetchGalleryExtension(Extension):
 
     def createActions(self, window):
         """
-        Krita bug, in Linux. (create actions later.)
-        """
-        QTimer.singleShot(0, lambda menu_bar=window.qwindow().menuBar(): self.delayed_create_actions(menu_bar))
-
-
-    def delayed_create_actions(self, menu_bar):
-        """
         Called once for each new window opened in Krita.
         """
-        parent_menu = make_menus(
-                menu_bar,
-                self.parent_menu_path,
-                exist_ok=True)
+        menu_bar = window.qwindow().menuBar()
+
+        tools_menu = find_menu(menu_bar, "tools")
+        experimental_menu = find_menu(tools_menu, "experimental")
+        if experimental_menu is None:
+            experimental_menu = create_menu("experimental", i18n("Experimental"), parent=tools_menu)
+            tools_menu.addAction(experimental_menu.menuAction())
 
         # add action "instance"
-        parent_menu.addAction(
-                self._fetch_gallery_action)
+        experimental_menu.addAction(self._fetch_gallery_action)
 
 
     def fetch_gallery(self, cheched=None):

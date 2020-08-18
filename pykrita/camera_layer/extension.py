@@ -35,14 +35,13 @@ from camera_layer.common.utils_py import \
         first, last, underscore
 
 from camera_layer.common.utils_qt import \
-        make_menus, create_action
+        find_menu, create_menu, create_action
 
 from camera_layer.camera_layer import \
         CameraLayer
 
 from camera_layer.data_types.camera_layer_data import \
         CameraLayerData
-
 
 
 class CameraLayerExtension(Extension):
@@ -52,10 +51,6 @@ class CameraLayerExtension(Extension):
     """
     settings_path = "plugin_settings/camera_layer"
     # some_setting = settings_path +"/some"
-
-    parent_menu_path = (
-            ("tools", "&Tools"),
-                ("experimental_plugins", i18n("&Experimental Plugins")))
 
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)
@@ -91,23 +86,18 @@ class CameraLayerExtension(Extension):
 
     def createActions(self, window):
         """
-        Krita bug, in Linux. (create actions later.)
-        """
-        QTimer.singleShot(0, lambda menu_bar=window.qwindow().menuBar(): self.delayed_create_actions(menu_bar))
-
-
-    def delayed_create_actions(self, menu_bar):
-        """
         Called once for each new window opened in Krita.
         """
-        parent_menu = make_menus(
-                menu_bar,
-                self.parent_menu_path,
-                exist_ok=True)
+        menu_bar = window.qwindow().menuBar()
+
+        tools_menu = find_menu(menu_bar, "tools")
+        experimental_menu = find_menu(tools_menu, "experimental")
+        if experimental_menu is None:
+            experimental_menu = create_menu("experimental", i18n("Experimental"), parent=tools_menu)
+            tools_menu.addAction(experimental_menu.menuAction())
 
         # add action "instance"
-        parent_menu.addAction(
-                self._create_camera_layer_action)
+        experimental_menu.addAction(self._create_camera_layer_action)
 
 
     def attach_camera_layer(self, node):
