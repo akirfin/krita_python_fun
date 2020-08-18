@@ -6,7 +6,6 @@ ToDo:
     - custom dialog
     - dir(krita) there was fome pixelformat thingies..
     - solve settings
-    - solve parent menu / sub menu
 
 """
 
@@ -91,7 +90,6 @@ class FetchGalleryExtension(Extension):
         Called once for each new window opened in Krita.
         """
         menu_bar = window.qwindow().menuBar()
-
         tools_menu = find_menu(menu_bar, "tools")
         experimental_menu = find_menu(tools_menu, "experimental")
         if experimental_menu is None:

@@ -150,20 +150,13 @@ class LayerPropertiesHook(QObject):
 
 
     def eventFilter(self, obj, event):
-        is_dialog = False
-        try:
-            # sometimes in exit, Qt can give out corpses.
-            is_dialog = isinstance(obj, QDialog)
-        except:
-            pass
-        if is_dialog:
-            dialog = obj
-            if dialog.metaObject().className() == "KisDlgLayerProperties":
-                flags = dialog.windowFlags()
-                if not (flags & Qt.WindowStaysOnTopHint):
-                    dialog.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
-                # if event.type() == 216:  # done only once in init.
-                if event.type() == QEvent.WindowIconChange:  # done only once in init.
+        if event.type() == QEvent.WindowIconChange:
+            if isinstance(obj, QDialog):
+                dialog = obj
+                if dialog.metaObject().className() == "KisDlgLayerProperties":
+                    flags = dialog.windowFlags()
+                    if not (flags & Qt.WindowStaysOnTopHint):
+                        dialog.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
                     if self.keep_alive(dialog):
                         # was added to keep_alive (only first time)
                         dialog.destroyed.connect(lambda target=dialog: self.drop_dead(target))

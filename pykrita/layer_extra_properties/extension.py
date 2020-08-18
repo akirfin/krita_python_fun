@@ -5,7 +5,6 @@ Layer extra properties extension
 ToDo:
     - option to suppress JSON path in LayerExtraPropertiesWidget (used when custom layer properties widget exits.)
     - solve settings
-    - solve parent menu / sub menu
 
 """
 
@@ -81,7 +80,6 @@ class LayerExtraPropertiesExtension(Extension):
         Called once for each new window opened in Krita.
         """
         menu_bar = window.qwindow().menuBar()
-
         tools_menu = find_menu(menu_bar, "tools")
         experimental_menu = find_menu(tools_menu, "experimental")
         if experimental_menu is None:
