@@ -1,8 +1,8 @@
 [Desktop Entry]
 Type = Service
 ServiceTypes = Krita/PythonPlugin
-X-KDE-Library = layer_meta_data
+X-KDE-Library = layer_extra_properties
 X-Python-2-Compatible = false
 X-Krita-Manual = readme.md
-Name = Layer Meta Data
+Name = Layer Extra Properties
 Comment = Experimental plugin

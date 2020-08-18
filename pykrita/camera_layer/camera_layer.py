@@ -40,10 +40,10 @@ from camera_layer.common.utils_qt import \
 from camera_layer.data_types.camera_layer_data import \
         CameraLayerData
 
-from layer_meta_data.common.data_serializer import \
+from layer_extra_properties.common.data_serializer import \
         serializer
 
-from layer_meta_data.layer_meta_data import \
+from layer_extra_properties.layer_meta_data import \
         get_layer_meta_data, set_layer_meta_data
 
 

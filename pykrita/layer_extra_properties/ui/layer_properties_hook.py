@@ -2,7 +2,7 @@
 
 How to use:
 
-from camera_layer.layer_properties.layer_properties_hook import \
+from layer_extra_properties.ui.layer_properties_hook import \
         LayerPropertiesHook
 
 LayerPropertiesHook.register()
@@ -28,27 +28,27 @@ from PyQt5.QtWidgets import \
         QWidget, QDialog, QStackedLayout, QScrollArea, \
         QApplication
 
-from layer_meta_data.common.utils_py import \
+from layer_extra_properties.common.utils_py import \
         print_console, first, last, UnicodeType, BytesType
 
-from layer_meta_data.common.utils_kis import \
+from layer_extra_properties.common.utils_kis import \
         get_active_node
 
-from layer_meta_data.common.data_serializer import \
+from layer_extra_properties.common.data_serializer import \
         serializer
 
-from layer_meta_data.layer_meta_data import \
+from layer_extra_properties.layer_meta_data import \
         get_layer_meta_data, set_layer_meta_data
 
 from .widget_mapper import \
         widget_mapper
 
 
-class LayerMetaDataWidget(QWidget):
+class LayerExtraPropertiesWidget(QWidget):
     def __init__(self, node=None, parent=None):
-        super(LayerMetaDataWidget, self).__init__(parent=parent)
+        super(LayerExtraPropertiesWidget, self).__init__(parent=parent)
         self._node = None
-        self.setObjectName("layer_meta_data_widget")
+        self.setObjectName("layer_extra_properties_widget")
         self.create_ui()
         if node is not None:
             self.node = node
@@ -71,8 +71,8 @@ class LayerMetaDataWidget(QWidget):
         except:
             data = oDict()
         content = widget_mapper.create_widget(data)
-        content.setObjectName("layer_meta_data")
-        content.title = "Layer Meta Data"
+        content.setObjectName("layer_extra_properties")
+        content.title = "Layer Extra Properties"
         old_widget = self._scroll_area.widget()
         self._scroll_area.setWidget(content)
         content.node = self._node
@@ -163,7 +163,7 @@ class LayerPropertiesHook(QObject):
                         dialog.destroyed.connect(lambda target=dialog: self.drop_dead(target))
                         layout = dialog.layout()  # QVBoxLayout
                         node = get_active_node()
-                        widget = LayerMetaDataWidget(node)
+                        widget = LayerExtraPropertiesWidget(node)
                         layout.insertWidget(1, widget, stretch=100)
                         dialog.accepted.connect(widget.push_data)
         return super(LayerPropertiesHook, self).eventFilter(obj, event)

@@ -54,7 +54,7 @@ if __name__ == "__main__":
     if check_src_dir == check_trg_dir:
         raise RuntimeError("Insanity check! source dir is destination dir? (Stopping, bad install!)")
 
-    for entry in ("arc_welding_tool", "camera_layer", "fetch_gallery", "layer_meta_data"):
+    for entry in ("arc_welding_tool", "camera_layer", "fetch_gallery", "layer_extra_properties"):
         src_dir = pykrita_src_dir(entry)
         trg_dir = pykrita_trg_dir(entry)
         if os.path.isdir(trg_dir):
@@ -63,7 +63,7 @@ if __name__ == "__main__":
         copytree(src_dir, trg_dir)
         print('copytree("{src_dir}",\n         "{trg_dir}")\n'.format(**locals()))
 
-    for entry in ("arc_welding_tool.desktop", "camera_layer.desktop", "fetch_gallery.desktop", "layer_meta_data.desktop"):
+    for entry in ("arc_welding_tool.desktop", "camera_layer.desktop", "fetch_gallery.desktop", "layer_extra_properties.desktop"):
         src_dsk = pykrita_src_dir(entry)
         copy2(src_dsk, krita_resource_dir)
         print('copy2("{src_dsk}",\n      "{krita_resource_dir}")\n'.format(**locals()))

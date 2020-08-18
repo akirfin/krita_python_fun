@@ -7,7 +7,7 @@ except:
 from camera_layer.common.utils_py import \
         UnicodeType, BytesType
 
-from layer_meta_data.common.data_serializer import \
+from layer_extra_properties.common.data_serializer import \
         serializer
 
 

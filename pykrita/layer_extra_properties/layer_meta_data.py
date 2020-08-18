@@ -2,7 +2,7 @@
 
 from krita import Krita
 
-from layer_meta_data.layer_meta_data import \
+from layer_extra_properties.layer_meta_data import \
         get_layer_meta_data, set_layer_meta_data
 
 node = Krita.instance().activeDocument().activeNode()
@@ -27,10 +27,10 @@ from PyQt5.QtCore import \
 from PyQt5.QtWidgets import \
         QDialog, QApplication, QTextEdit, QLineEdit
 
-from layer_meta_data.common.utils_py import \
+from layer_extra_properties.common.utils_py import \
         first, last, UnicodeType, BytesType
 
-from layer_meta_data.common.utils_kis import \
+from layer_extra_properties.common.utils_kis import \
         keep_active_node
 
 

@@ -41,8 +41,8 @@ Show tool context gizmo in viewport.</p>
 and then push QImage to layer node.</p>
 <hr>
 
-<img src="./pykrita/layer_meta_data/resources/title_image.jpg"/>
-<h3>layer_meta_data</h3>
+<img src="./pykrita/layer_extra_properties/resources/title_image.jpg"/>
+<h3>layer_extra_properties</h3>
 <p>show extra secton in layer properties.
 JSON tree of user defined settings.
 (currntly JSON is stored in DublinCore.publisher field.)

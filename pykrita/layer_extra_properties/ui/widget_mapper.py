@@ -25,7 +25,7 @@ from PyQt5.QtWidgets import \
         QWidget, QFrame, QLabel, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, \
         QMenuBar, QFormLayout, QHBoxLayout, QVBoxLayout, QToolButton
 
-from layer_meta_data.common.utils_py import \
+from layer_extra_properties.common.utils_py import \
         first, last, UnicodeType, BytesType
 
 

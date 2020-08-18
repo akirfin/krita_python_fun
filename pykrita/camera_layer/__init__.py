@@ -34,10 +34,10 @@ def load_plugins():
     Make sure that depending plugins are registered.
 
     try:
-        import layer_meta_data
-        layer_meta_data.register()
+        import layer_extra_properties
+        layer_extra_properties.register()
     except:
-        raise RuntimeError("Plugin dependency, layer_meta_data plugin is needed!")
+        raise RuntimeError("Plugin dependency, layer_extra_properties plugin is needed!")
     """
 
 

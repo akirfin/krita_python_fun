@@ -15,18 +15,18 @@ from krita import Krita, Extension
 from PyQt5.QtCore import \
         QSettings, QTimer
 
-from layer_meta_data.common.utils_py import \
+from layer_extra_properties.common.utils_py import \
         first, last, underscore
 
-from layer_meta_data.common.utils_qt import \
+from layer_extra_properties.common.utils_qt import \
         make_menus, create_action
 
-from layer_meta_data.ui.layer_properties_hook import \
+from layer_extra_properties.ui.layer_properties_hook import \
         LayerPropertiesHook
 
 
-class LayerMetaDataExtension(Extension):
-    settings_path = "plugin_settings/layer_meta_data"
+class LayerExtraPropertiesExtension(Extension):
+    settings_path = "plugin_settings/layer_extra_properties"
     show_meta_data_setting = settings_path + "/show_meta_data"
 
     parent_menu_path = (
@@ -34,7 +34,7 @@ class LayerMetaDataExtension(Extension):
                 ("experimental_plugins", "&Experimental Plugins"))
 
     def __init__(self, parent):
-        super(LayerMetaDataExtension, self).__init__(parent)
+        super(LayerExtraPropertiesExtension, self).__init__(parent)
 
 
     def setup(self):
