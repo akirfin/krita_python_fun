@@ -73,7 +73,7 @@ class LayerExtraPropertiesExtension(Extension):
         settings.setValue(
                 self.show_layer_extra_properties_setting,
                 self._show_layer_extra_properties.isChecked())
-
+        LayerPropertiesHook.unregister()
 
 
     def createActions(self, window):

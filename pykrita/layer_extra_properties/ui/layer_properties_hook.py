@@ -150,7 +150,13 @@ class LayerPropertiesHook(QObject):
 
 
     def eventFilter(self, obj, event):
-        if isinstance(obj, QDialog):
+        is_dialog = False
+        try:
+            # sometimes in exit, Qt can give out corpses.
+            is_dialog = isinstance(obj, QDialog)
+        except:
+            pass
+        if is_dialog:
             dialog = obj
             if dialog.metaObject().className() == "KisDlgLayerProperties":
                 flags = dialog.windowFlags()

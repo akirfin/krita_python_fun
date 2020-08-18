@@ -2,6 +2,8 @@
 
 I can see you!
 
+https://code.qt.io/cgit/pyside/pyside-setup.git/tree/examples/multimedia/camera.py
+
 ToDo:
     - handle custom layer properties widget
     - solve settings
