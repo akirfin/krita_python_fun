@@ -3,7 +3,10 @@
 Layer meta data extension
 
 ToDo:
-    - option to suppress JSON path in widget_mapper (used when custom layer properties widget exits.)
+    - option to suppress JSON path in LayerExtraPropertiesWidget (used when custom layer properties widget exits.)
+    - solve settings
+    - solve parent menu / sub menu
+
 """
 
 import re
@@ -31,7 +34,7 @@ class LayerExtraPropertiesExtension(Extension):
 
     parent_menu_path = (
             ("tools", "&Tools"),
-                ("experimental_plugins", "&Experimental Plugins"))
+                ("experimental_plugins", i18n("&Experimental Plugins")))
 
     def __init__(self, parent):
         super(LayerExtraPropertiesExtension, self).__init__(parent)
@@ -55,7 +58,7 @@ class LayerExtraPropertiesExtension(Extension):
         # create actions here and share "instance" to other places.
         self._show_meta_data_action = create_action(
                 name="show_meta_data",
-                text="Show Meta Data",
+                text=i18n("Show Layer Extra Properties"),
                 checkable=True,
                 checked=show_meta_data,
                 triggered=self.show_meta_data,

@@ -2,6 +2,9 @@
 
 Register & Unregister plugin for Krita.
 
+ToDo:
+    - can loaded modules be tracked before / after load?
+
 """
 
 __version__ = "0.0.12"

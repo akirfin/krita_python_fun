@@ -5,6 +5,8 @@ Arc Welding! (now we're cooking with GAS)
 ToDo:
     - view/canvas trapping
     - using canvas_transform to solve transform.
+    - solve settings
+    - solve parent menu / sub menu
 
 """
 
@@ -36,7 +38,7 @@ class ArcWeldingToolExtension(Extension):
 
     parent_menu_path = (
             ("tools", "&Tools"),
-                ("experimental_plugins", "&Experimental Plugins"))
+                ("experimental_plugins", i18n("&Experimental Plugins")))
 
     def __init__(self, parent):
         super(ArcWeldingToolExtension, self).__init__(parent)
@@ -51,12 +53,14 @@ class ArcWeldingToolExtension(Extension):
         notifier.applicationClosing.connect(self.shuttingDown)
 
         settings = QSettings()
+        # config_path = QStandardPaths.writableLocation(QStandardPaths.GenericConfigLocation)
+        # self.settings = QSettings(config_path + "/krita/arc_welding_tool", QSettings.IniFormat)
         # self._some_value = settings.value(self.some_setting, defaultValue=, type=)
 
         # create actions here and share "instance" to other places.
         self._activate_arc_welding_action = create_action(
                 name="activate_arc_welding",
-                text="Activate Arc Welding",
+                text=i18n("Activate Arc Welding"),
                 triggered=self.activate_arc_welding,
                 parent=self)  # I own the action!
 

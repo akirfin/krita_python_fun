@@ -72,7 +72,7 @@ class LayerExtraPropertiesWidget(QWidget):
             data = oDict()
         content = widget_mapper.create_widget(data)
         content.setObjectName("layer_extra_properties")
-        content.title = "Layer Extra Properties"
+        content.title = i18n("Layer Extra Properties")
         old_widget = self._scroll_area.widget()
         self._scroll_area.setWidget(content)
         content.node = self._node

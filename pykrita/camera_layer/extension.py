@@ -4,6 +4,8 @@ I can see you!
 
 ToDo:
     - handle custom layer properties widget
+    - solve settings
+    - solve parent menu / sub menu
 
 """
 
@@ -53,7 +55,7 @@ class CameraLayerExtension(Extension):
 
     parent_menu_path = (
             ("tools", "&Tools"),
-                ("experimental_plugins", "&Experimental Plugins"))
+                ("experimental_plugins", i18n("&Experimental Plugins")))
 
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)

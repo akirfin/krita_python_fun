@@ -5,6 +5,8 @@ Fetch gallery
 ToDo:
     - custom dialog
     - dir(krita) there was fome pixelformat thingies..
+    - solve settings
+    - solve parent menu / sub menu
 
 """
 
@@ -35,7 +37,7 @@ class FetchGalleryExtension(Extension):
 
     parent_menu_path = (
             ("tools", "&Tools"),
-                ("experimental_plugins", "&Experimental Plugins"))
+                ("experimental_plugins", i18n("&Experimental Plugins")))
 
 
     def __init__(self, parent):
@@ -68,7 +70,7 @@ class FetchGalleryExtension(Extension):
         # create actions here and share "instance" to other places.
         self._fetch_gallery_action = create_action(
                 name="fetch_gallery",
-                text="Fetch Gallery",
+                text=i18n("Fetch Gallery"),
                 triggered=self.fetch_gallery,
                 parent=self)  # I own the action!
 

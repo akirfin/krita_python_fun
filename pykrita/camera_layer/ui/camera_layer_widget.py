@@ -35,15 +35,15 @@ class CameraLayerWidget(QWidget):
         self.setLayout(layout)
 
         self._camera_id = QComboBox()
-        layout.addRow("camera_id", self._camera_id)
+        layout.addRow(i18n("camera_id"), self._camera_id)
 
         self._mode = QComboBox()
-        layout.addRow("mode", self._mode)
+        layout.addRow(i18n("mode"), self._mode)
 
         #self._transform = TranformWidget()
         #layout.addRow("transform", self._transform)
 
-        self._capture = QPushButton("Capture")  # toggle/click button with red dot
+        self._capture = QPushButton(i18n("Capture"))  # toggle/click button with red dot
         layout.addRow(self._capture)
 
 

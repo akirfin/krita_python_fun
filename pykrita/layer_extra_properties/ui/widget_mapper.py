@@ -113,7 +113,7 @@ class DictWidget(QWidget):
         title_bar_layout.addStretch(stretch=100)
 
         self.menu_bar = QMenuBar()
-        self.menu_bar.addMenu("Edit")
+        self.menu_bar.addMenu(i18n("Edit"))
         title_bar_layout.addWidget(self.menu_bar)
 
         self.items = QWidget()
@@ -294,7 +294,7 @@ class ListWidget(QWidget):
         title_bar_layout.addStretch(stretch=100)
 
         self.menu_bar = QMenuBar()
-        self.menu_bar.addMenu("Edit")
+        self.menu_bar.addMenu(i18n("Edit"))
         title_bar_layout.addWidget(self.menu_bar)
 
         self.items = QWidget()
