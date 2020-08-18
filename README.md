@@ -54,7 +54,7 @@ JSON tree of user defined settings.
 OpenStreetMap layer: fetch any place on earth!
 glTF layer: show glTF in layer or use layers as textures?
 PixFika layer: Shadertoy + glsl sandbox + PixFika compatible layer
-Tutor: interactive drawing tutor
+Tutor: interactive drawing tutor (Timelapse, maybe record strokes?)
 Multi user Krita: One document multiple interactive users. (sync layers + show fake cursors)
 PyKrita Unit test runner</p>
 <hr>
