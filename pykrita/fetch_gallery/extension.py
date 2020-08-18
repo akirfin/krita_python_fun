@@ -4,6 +4,7 @@ Fetch gallery
 
 ToDo:
     - custom dialog
+    - dir(krita) there was fome pixelformat thingies..
 
 """
 
