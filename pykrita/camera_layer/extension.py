@@ -30,7 +30,7 @@ from PyQt5.QtMultimedia import \
         QCameraInfo, QCamera, QCameraImageCapture
 
 from camera_layer.common.utils_kis import \
-        find_document_for
+        find_document_for, write_extension_action_file
 
 from camera_layer.common.utils_py import \
         first, last, underscore
@@ -75,6 +75,8 @@ class CameraLayerExtension(Extension):
                 text="Create Camera Layer",
                 triggered=self.create_camera_layer,
                 parent=self)  # I own the action!
+
+        # write_extension_action_file(self)
 
 
     def shuttingDown(self):

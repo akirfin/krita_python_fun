@@ -25,7 +25,7 @@ from fetch_gallery.common.utils_qt import \
         fetch_qimage_from_url, find_menu, create_menu, create_action
 
 from fetch_gallery.common.utils_kis import \
-        create_document_from_qimage
+        create_document_from_qimage, write_extension_action_file
 
 
 class FetchGalleryExtension(Extension):
@@ -67,6 +67,8 @@ class FetchGalleryExtension(Extension):
                 text=i18n("Fetch Gallery"),
                 triggered=self.fetch_gallery,
                 parent=self)  # I own the action!
+
+        # write_extension_action_file(self)
 
 
     def shuttingDown(self):

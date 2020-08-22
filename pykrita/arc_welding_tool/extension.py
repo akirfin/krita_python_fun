@@ -20,6 +20,9 @@ from arc_welding_tool.common.utils_py import \
 from arc_welding_tool.common.utils_qt import \
         find_menu, create_menu, create_action
 
+from layer_extra_properties.common.utils_kis import \
+        write_extension_action_file
+
 from arc_welding_tool.canvas_transform import \
         get_canvas_transform, get_canvas_qcanvas
 
@@ -58,6 +61,8 @@ class ArcWeldingToolExtension(Extension):
                 text=i18n("Activate Arc Welding"),
                 triggered=self.activate_arc_welding,
                 parent=self)  # I own the action!
+
+        # write_extension_action_file(self)
 
 
     def shuttingDown(self):
