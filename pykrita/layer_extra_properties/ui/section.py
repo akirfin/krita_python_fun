@@ -23,84 +23,69 @@ from layer_extra_properties.common.utils_py import \
         first, last, UnicodeType, BytesType
 
 
-class Section(QWidget):
-    def __init__(self, folding=None, parent=None):
-        super(Section, self).__init__(parent=parent)
-        self.setObjectName("section")
+class TitleBar(QFrame):
+    def __init__(self, parent=None):
+        super(TitleBar, self).__init__(parent=parent)
+        self.setObjectName("title_bar")
         self.create_ui()
-        if folding is not None:
-            self.folding = folding
 
 
     def create_ui(self):
-        self._shadow = QGraphicsDropShadowEffect(self)
-        self._shadow.setBlurRadius(10)
-        self._shadow.setColor(QColor(0, 0, 0, 80))
-        self._shadow.setOffset(2, 2)
-        self.setGraphicsEffect(self._shadow)
-
-        layout = QVBoxLayout()
-        layout.setSpacing(0)
-        layout.setContentsMargins(0, 0, 0, 0)
-        layout.setAlignment(Qt.AlignTop)
-        self.setLayout(layout)
-
-        self._title_bar = QFrame()
-        self._title_bar.setAutoFillBackground(True)
-        self._title_bar.setBackgroundRole(QPalette.Window)
-        bg_role = self._title_bar.backgroundRole()
-        palette = self._title_bar.palette()
+        self.setAutoFillBackground(True)
+        self.setBackgroundRole(QPalette.Window)
+        bg_role = self.backgroundRole()
+        palette = self.palette()
         old_color = palette.color(bg_role)
         bar_color = old_color.lighter(120)
         palette.setColor(bg_role, bar_color)
-        self._title_bar.setPalette(palette)
-        layout.addWidget(self._title_bar)
-
-        title_bar_layout = QHBoxLayout()
-        title_bar_layout.setContentsMargins(0, 0, 0, 0)
-        self._title_bar.setLayout(title_bar_layout)
-
+        self.setPalette(palette)
+        # layout
+        layout = QHBoxLayout()
+        layout.setContentsMargins(0, 0, 0, 0)
+        self.setLayout(layout)
+        # folding button
         self._folding = QToolButton()
         self._folding.setCheckable(True)
         self._folding.setStyleSheet(
                         ('.QToolButton {border: none;}'
                          '.QToolButton:hover {border: 1px;}'
                          '.QToolButton:pressed {border: 1px;}'))
-        title_bar_layout.addWidget(self._folding)
-
-        self._title = QLabel("")
+        layout.addWidget(self._folding)
+        # title label
+        self._title = QLabel()
         self._title.setContentsMargins(8, 0, 8, 0)
-        title_bar_layout.addWidget(self._title)
-
-        title_bar_layout.addStretch(stretch=100)
-
+        layout.addWidget(self._title)
+        # stretch
+        layout.addStretch(stretch=100)
+        # menu bar
         self._menu_bar = QMenuBar()
         self._menu_bar.setBackgroundRole(QPalette.Window)
         bg_role = self._menu_bar.backgroundRole()
         palette = self._menu_bar.palette()
         palette.setColor(bg_role, bar_color)
         self._menu_bar.setPalette(palette)
-
-        title_bar_layout.addWidget(self._menu_bar)
-
-        self._content = None
-
+        layout.addWidget(self._menu_bar)
         # connect signals
-        self._folding.clicked.connect(self.on_toggle_folding)
+        self._folding.toggled.connect(self.on_folding_toggled)
         self._folding.toggled.connect(self.folding_changed)
-        self.on_toggle_folding(True)
 
 
-    def on_toggle_folding(self, checked=None):
-        self._folding.setChecked(checked)
-        if self._folding.isChecked():
-            self._folding.setArrowType(Qt.DownArrow)
-            if self._content is not None:
-                self._content.setVisible(True)
-        else:
-            self._folding.setArrowType(Qt.RightArrow)
-            if self._content is not None:
-                self._content.setVisible(False)
+    def on_folding_toggled(self, checked):
+        self._folding.setArrowType(Qt.DownArrow if checked else Qt.RightArrow)
+
+
+    def get_folding(self):
+        return self._folding.isChecked()
+
+
+    @QSlot(bool)
+    def set_folding(self, new_folding):
+        self._folding.setChecked(new_folding)
+        # toggled signal is chained folding_changed
+
+
+    folding_changed = QSignal(bool)
+    folding = QProperty(bool, fget=get_folding, fset=set_folding, notify=folding_changed, user=True)
 
 
     def get_title(self):
@@ -115,25 +100,94 @@ class Section(QWidget):
     title = QProperty(UnicodeType, fget=get_title, fset=set_title)
 
 
+    def menu_bar(self):
+        return self._menu_bar
+
+
+    def mouseReleaseEvent(self, e):
+        def hit_test(pos):
+            return self.rect().contains(pos)
+
+        if e.button() != Qt.LeftButton:
+            e.ignore()
+            return
+        if hit_test(e.pos()):
+            old_state = self._folding.isChecked()
+            self._folding.setChecked(not old_state)
+            e.accept()
+        else:
+            e.ignore()
+
+
+class Section(QWidget):
+    def __init__(self, folding=None, parent=None):
+        super(Section, self).__init__(parent=parent)
+        self.setObjectName("section")
+        self.create_ui()
+        if folding is not None:
+            self.folding = folding
+        else:
+            self.folding = True
+
+
+    def create_ui(self):
+        self._shadow = QGraphicsDropShadowEffect(self)
+        self._shadow.setBlurRadius(10)
+        self._shadow.setColor(QColor(0, 0, 0, 80))
+        self._shadow.setOffset(2, 2)
+        self.setGraphicsEffect(self._shadow)
+        # layout
+        layout = QVBoxLayout()
+        layout.setSpacing(0)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.setAlignment(Qt.AlignTop)
+        self.setLayout(layout)
+        # title bar
+        self._title_bar = TitleBar()
+        layout.addWidget(self._title_bar)
+        # content
+        self._content = None
+        # connect signals
+        self._title_bar.folding_changed.connect(self.on_title_bar_folding_changed)
+        self._title_bar.folding_changed.connect(self.folding_changed)
+
+
+    def on_title_bar_folding_changed(self, checked=None):
+        if self._content is not None:
+            self._content.setVisible(checked)
+
+
+    def get_title(self):
+        return self._title_bar.title
+
+
+    @QSlot(UnicodeType)
+    def set_title(self, new_title):
+        self._title_bar.title = new_title
+
+
+    title = QProperty(UnicodeType, fget=get_title, fset=set_title)
+
+
     def get_folding(self):
-        return self._folding.isChecked()
+        return self._title_bar.folding
 
 
     @QSlot(bool)
     def set_folding(self, new_folding):
-        new_folding = bool(new_folding)
-        old_folding = self.get_folding()
-        if new_folding != old_folding:
-            self._folding.setChecked(new_folding)
-            # toggled signal is chained folding_changed
+        self._title_bar.folding = new_folding
 
 
     folding_changed = QSignal(bool)
-    folding = QProperty(UnicodeType, fget=get_folding, fset=set_folding, notify=folding_changed, user=True)
+    folding = QProperty(bool, fget=get_folding, fset=set_folding, notify=folding_changed)
+
+
+    def title_bar(self):
+        return self._title_bar
 
 
     def menu_bar(self):
-        return self._menu_bar
+        return self._title_bar.menu_bar()
 
 
     def get_content(self):

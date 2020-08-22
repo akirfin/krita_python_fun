@@ -91,6 +91,7 @@ class ArcWeldingToolExtension(Extension):
         # show particle system + QImage in new window resize to QImage
         # hook canvas transform change signals
         # hook canvas mouse / tablet events (transform to new window)
+
         canvas = app.activeWindow().activeView().canvas()
         for welding_view in self._welding_views:
             if welding_view.canvas == canvas
