@@ -53,24 +53,18 @@ JSON tree of user defined settings.
 <pre>
 Krita Shelfs:
   - place scripts, actions with settings, filepaths, then just click or drag & drop to target
-
 OpenStreetMap layer:
   - fetch any place on earth!
-
 glTF layer:
   - show glTF in layer or use layers as textures?
-
 PixFika layer:
   - Shadertoy + glsl sandbox + PixFika compatible layer
-
 Tutor:
   - interactive drawing tutor (Timelapse, maybe record strokes?)
-
 Multi user Krita:
   - One document multiple interactive users. (sync layers + show fake cursors)
   - Also works as bridge from krita to other programs krita<->blender?
   - use <a href="https://doc.qt.io/qt-5/qsharedmemory.html">QSharedMemory</a> or <a href="https://docs.python.org/3/library/multiprocessing.shared_memory.html">shared_memory (py 3.8+)</a>
-  
 PyKrita Unit test runner:
   - graphical untit test runner with watchdog & auto start.
 </pre>
