@@ -3,11 +3,12 @@
 Small common scripts for Krita
 
 """
-
+import os
 from contextlib import contextmanager
 
 from krita import Krita, View
 
+from PyQt5.QtCore import QStandardPaths
 from PyQt5.QtGui import QImage
 
 from .utils_py import \
@@ -85,7 +86,7 @@ def keep_active_document(new_document=None):
 @contextmanager
 def keep_active_node(new_node=None):
     app = Krita.instance()
-    new_document = app.activeDocument() if new_node is None else find_node_document(new_node)
+    new_document = app.activeDocument() if new_node is None else find_document_for(new_node)
     with keep_active_document(new_document):
         old_node = get_active_node()
         try:
@@ -93,7 +94,7 @@ def keep_active_node(new_node=None):
                 new_document.setActiveNode(new_node)
             yield get_active_node()
         finally:
-            document = find_node_document(old_node)
+            document = find_document_for(old_node)
             if document is not None:
                 document.setActiveNode(old_node)
 
@@ -190,3 +191,61 @@ def push_qimage_data_to_node(qimage, node, x=None, y=None, width=None, height=No
         ptr = qimage.constBits()
         ptr.setsize(qimage.byteCount())
         node.setPixelData(bytes(ptr.asarray()), x, y, width, height)
+
+
+def krita_resource_dir():
+    return QStandardPaths.writableLocation(QStandardPaths.AppDataLocation)
+
+
+def write_extension_action_file(extension, overwrite=False):
+    actions_collection_template = """
+            <?xml version="1.0" encoding="UTF-8"?>
+            <ActionCollection version="2" name="Scripts">
+                <Actions category="{extension_name}">
+                    {actions}
+                </Actions>
+            </ActionCollection>"""
+
+    action_template = """
+            <text>{action_text}</text>
+            <Action name="{action_name}">
+                <icon>{action_icon}</icon>
+                <text>{action_text}</text>
+                <whatsThis>{action_whats_this}</whatsThis>
+                <toolTip>{action_tool_tip}</toolTip>
+                <iconText>{action_icon_text}</iconText>
+                <activationFlags>10000</activationFlags>
+                <activationConditions>0</activationConditions>
+                <shortcut>{action_shortcut}</shortcut>
+                <isCheckable>{action_is_checkable}</isCheckable>
+                <statusTip>{action_status_tip}</statusTip>
+            </Action>"""
+
+    extension_name = extension.objectName()
+
+    action_file_name = "{extension_name}.action".format(**locals())
+    action_file_path = os.path.join(krita_resource_dir(), "actions", action_file_name)
+
+    file_missing = not os.path.isfile(action_file_path)
+    if file_missing or overwrite:
+        # write file
+        actions = list()
+        for action in extension.findChildren(QAction):
+            # iterate MY actions.
+            action_name = action.objectName()
+            action_icon = action.icon().name()  # ToDo: check this?
+            action_text = action.text()
+            action_icon_text = action.iconText()
+            action_whats_this = action.whatsThis()
+            action_tool_tip = action.toolTip()
+            action_status_tip = action.statusTip()
+            action_is_checkable = action.isCheckable()
+            action_shortcut = action.shortcut().toString()
+            actions.append(action_template.format(**locals()))
+
+        actions = ''.join(actions)
+        xml_data = actions_collection_template.format(**locals())
+        with open(action_file_path, "w") as f:
+            f.write(xml_data)
+    else:
+        pass # nothing to do

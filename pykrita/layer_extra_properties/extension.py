@@ -23,6 +23,9 @@ from layer_extra_properties.common.utils_py import \
 from layer_extra_properties.common.utils_qt import \
         find_menu, create_menu, create_action
 
+from layer_extra_properties.common.utils_kis import \
+        write_extension_action_file
+
 from layer_extra_properties.ui.layer_properties_hook import \
         LayerPropertiesHook
 
@@ -59,6 +62,8 @@ class LayerExtraPropertiesExtension(Extension):
                 checked=show_layer_extra_properties,
                 triggered=self.show_layer_extra_properties,
                 parent=self)  # I own the action!
+
+        # write_extension_action_file(self)
 
         # set initial state
         self.show_layer_extra_properties(show_layer_extra_properties)
