@@ -87,6 +87,25 @@ class ArcWeldingToolExtension(Extension):
         """
         activate arc welding tool.
         """
+        # copy active layer to QImage
+        # show particle system + QImage in new window resize to QImage
+        # hook canvas transform change signals
+        # hook canvas mouse / tablet events (transform to new window)
+        canvas = app.activeWindow().activeView().canvas()
+        for welding_view in self._welding_views:
+            if welding_view.canvas == canvas
+                welding_view.install_hook()
+                welding_view.show()
+                welding_view.raise_()
+                break # already exist!
+        else:
+            welding_view = WeldingView(canvas)
+            welding_view.install_hook()
+            welding_view.show()
+            welding_view.raise_()
+            self._welding_views.append(welding_view)
+
+
         app = Krita.instance()
         p_system = self._arc_welding_tool_context
         active_canvas = None

@@ -34,81 +34,17 @@ from layer_extra_properties.common.utils_py import \
 from layer_extra_properties.common.utils_kis import \
         get_active_node
 
+from layer_extra_properties.common.utils_qt import \
+        dump_qobject_tree
+
 from layer_extra_properties.common.data_serializer import \
         serializer
 
 from layer_extra_properties.layer_meta_data import \
         get_layer_meta_data, set_layer_meta_data
 
-from .widget_mapper import \
-        widget_mapper
-
-
-class LayerExtraPropertiesWidget(QWidget):
-    def __init__(self, node=None, parent=None):
-        super(LayerExtraPropertiesWidget, self).__init__(parent=parent)
-        self._node = None
-        self.setObjectName("layer_extra_properties_widget")
-        self.create_ui()
-        if node is not None:
-            self.node = node
-
-
-    def create_ui(self):
-        layout = QStackedLayout()
-        self.setLayout(layout)
-
-        self._scroll_area = QScrollArea()
-        self._scroll_area.setBackgroundRole(QPalette.Base)
-        self._scroll_area.setWidgetResizable(True)
-        layout.addWidget(self._scroll_area)
-
-
-    def pull_data(self):
-        meta_data = get_layer_meta_data(self._node)
-        try:
-            data = serializer.loads(meta_data)
-        except:
-            data = oDict()
-        content = widget_mapper.create_widget(data)
-        content.setObjectName("layer_extra_properties")
-        content.title = i18n("Layer Extra Properties")
-        old_widget = self._scroll_area.widget()
-        self._scroll_area.setWidget(content)
-        content.node = self._node
-        if old_widget is not None:
-            old_widget.deletelater()
-            old_widget.setParent(None)
-
-
-    @QSlot()
-    def push_data(self):
-        content = self._scroll_area.widget()
-        meta_data = "{}" if content is None else serializer.dumps(content.data)
-        set_layer_meta_data(self._node, meta_data)
-
-
-    def get_node(self):
-        return self._node
-
-
-    @QSlot(object)
-    def set_node(self, new_node):
-        if not isinstance(new_node, (Node, type(None))):
-            raise RuntimeError("Bad node, must be Node or None. (did get: {new_node})".format(**locals()))
-        old_node = self.get_node()
-        if new_node != old_node:
-            self._node = new_node
-            self.pull_data()
-            self.node_changed.emit(self.get_node())
-
-
-    node_changed = QSignal(object)
-    node = QProperty(object, fget=get_node, fset=set_node, notify=node_changed)
-
-
-    def minimumSizeHint(self):
-        return QSize(200, 200)
+from .data_widget_mapper import \
+        DataWidgetContainer
 
 
 class LayerPropertiesHook(QObject):
@@ -149,20 +85,48 @@ class LayerPropertiesHook(QObject):
         cls._alive[:] = (q for q in cls._alive if q != qobj)
 
 
+    def _nullify_extra_spacer(self, dialog):
+        """
+        nullify extra spacer at bottom of dialog.
+        """
+        WdgLayerProperties = dialog.findChild(QWidget, "WdgLayerProperties")
+        layout = WdgLayerProperties.layout()
+        for i in range(layout.count()):
+            item = layout.itemAt(i)
+            spacer = item.spacerItem()
+            if spacer is not None:
+                spacer.changeSize(0, 0)
+
+
+    def pull_data(self, node):
+        json_data = get_layer_meta_data(node)
+        try:
+            data = serializer.loads(json_data)
+        except:
+            data = oDict()
+        return list(data.items())
+
+
+    @QSlot()
+    def push_data(self, node, data):
+        data = oDict(data)
+        json_data = serializer.dumps(data)
+        set_layer_meta_data(node, json_data)
+
+
     def eventFilter(self, obj, event):
         if event.type() == QEvent.WindowIconChange:
             if isinstance(obj, QDialog):
                 dialog = obj
                 if dialog.metaObject().className() == "KisDlgLayerProperties":
-                    flags = dialog.windowFlags()
-                    if not (flags & Qt.WindowStaysOnTopHint):
-                        dialog.setWindowFlags(flags | Qt.WindowStaysOnTopHint)
+                    # dump_qobject_tree(dialog)
                     if self.keep_alive(dialog):
-                        # was added to keep_alive (only first time)
+                        # was added to keep_alive
+                        self._nullify_extra_spacer(dialog)
                         dialog.destroyed.connect(lambda target=dialog: self.drop_dead(target))
-                        layout = dialog.layout()  # QVBoxLayout
                         node = get_active_node()
-                        widget = LayerExtraPropertiesWidget(node)
-                        layout.insertWidget(1, widget, stretch=100)
-                        dialog.accepted.connect(widget.push_data)
+                        container = DataWidgetContainer()
+                        container.data = self.pull_data(node)
+                        dialog.layout().insertWidget(1, container, stretch=100)
+                        dialog.accepted.connect(lambda n=node, c=container: self.push_data(node, container.data))
         return super(LayerPropertiesHook, self).eventFilter(obj, event)
