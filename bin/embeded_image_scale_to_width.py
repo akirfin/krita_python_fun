@@ -32,7 +32,7 @@ from Qt.QtXml import QDomDocument
 def embeded_image_scale_to_width(src_path, width_scalar):
     qimage = QImage(src_path)
     new_width = width_scalar * qimage.width()
-    qimage.scaledToWidth(new_width, Qt.SmoothTransformation)
+    qimage = qimage.scaledToWidth(new_width, Qt.SmoothTransformation)
     data = QByteArray()
     buffer = QBuffer(data)
     buffer.open(QIODevice.WriteOnly)
@@ -46,11 +46,14 @@ def iter_elements(node_list):
         yield node_list.at(index).toElement()
 
 
-def calculate_width_scalar(img_nodes, target_width):
+def calculate_width_scalar(readme_dir, img_nodes, target_width):
     max_image_width = -1
     for element in iter_elements(img_nodes):
         src_attr = element.attribute("src")
-        max_image_width = max(QImage(src_attr).width(), max_image_width)
+        if src_attr.startswith("data:image"):
+            continue
+        src_path = os.path.abspath(os.path.join(readme_dir, src_attr))
+        max_image_width = max(QImage(src_path).width(), max_image_width)
     if max_image_width > 0:
         return float(target_width) / max_image_width
     else:
@@ -73,10 +76,13 @@ def embed_readme_images(readme_path):
     dom_doc.setContent(editor.toHtml())
     img_nodes = dom_doc.elementsByTagName("img")
 
-    width_scalar = calculate_width_scalar(img_nodes, 577.0)
+    width_scalar = calculate_width_scalar(readme_dir, img_nodes, 577.0)
+    print(width_scalar)
 
     for element in iter_elements(img_nodes):
         rel_src_path = element.attribute("src")
+        if rel_src_path.startswith("data:image"):
+            continue
         if rel_src_path:
             src_path = os.path.abspath(os.path.join(readme_dir, rel_src_path))
             if not os.path.isfile(src_path):
@@ -84,8 +90,8 @@ def embed_readme_images(readme_path):
             else:
                 rel_src_path = os.path.relpath(src_path, readme_dir)
                 rel_src_path = "./" + rel_src_path.replace("\\", "/")
-                element.setAttribute("src", rel_src_path)
                 element.setAttribute("source", embeded_image_scale_to_width(src_path, width_scalar=width_scalar))
+                element.setAttribute("src", rel_src_path)
 
     html = dom_doc.toString()
     with open(readme_path + "_ng", "w") as f:
