@@ -2,12 +2,12 @@
 <!DOCTYPE html>
 
 <html xmlns="http://www.w3.org/1999/xhtml">
-<head><title>Layer Extra Properties</title>
+<head><title>Arc Welding Tool</title>
 </head>
 <body>
 <p><img src="./resources/title_image.jpg" alt="title_image" title="Title"/></p>
 
-<h2>Layer Extra Properties</h2>
+<h2>Arc Welding Tool</h2>
 <p>Experimental Plugin</p>
 
 <ul>
