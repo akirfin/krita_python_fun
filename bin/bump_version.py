@@ -28,7 +28,7 @@ def open_new(file_path, exists_ok=True):
 if __name__ == "__main__":
     this_dir = os.path.dirname(sys.argv[0])
     project_dir = os.path.abspath(os.path.join(this_dir, ".."))
-    version_re = re.compile(r"^.*(?P<head>__version__\s*=\s*[\"']?)(?P<version>\d+\.\d+\.\d+)(?P<tail>[\"']?.*$)")
+    version_re = re.compile(r"(?P<head>^.*__version__\s*=\s*[\"']?)(?P<version>\d+\.\d+\.\d+)(?P<tail>[\"']?.*$)")
 
     for parent, folders, files in os.walk(project_dir):
         # prune hidden
