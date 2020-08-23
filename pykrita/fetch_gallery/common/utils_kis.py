@@ -195,21 +195,41 @@ def push_qimage_data_to_node(qimage, node, x=None, y=None, width=None, height=No
         node.setPixelData(bytes(ptr.asarray()), x, y, width, height)
 
 
-def read_setting(group, name, default=Undefined):
+def read_setting(extension_name, name, default=Undefined, type_hint=None):
+    undefined_str = "<--Undefined 445632456-->"
     app = Krita.instance()
-    json_data = app.readSetting(group, name, "{}")
-    value_dct = json.loads(json_data)
-    if value_dct:
-        return value_dct["value"]
-    elif default is not Undefined:
-        return default
+    if (type_hint is None) and (default is not Undefined):
+        type_hint = type(default)
+    data_str = app.readSetting(extension_name, name, undefined_str)
+    if data_str == undefined_str:
+        if default is Undefined:
+            raise ValueError((
+                    "Setting not found, and no default given."
+                    "(did get: extension_name={extension_name!r}, name={name!r})").format(**locals()))
+        else:
+            return default
     else:
-        raise ValueError("No setting, and no default. (did get: group={group!r}, name={name!r})".format(**locals()))
+        return data_str if type_hint is None else type_hint(data_str)
+
+
+def read_setting(extension_name, name, default=Undefined):
+    undefined_str = '"<--undefined 435235-->"'
+    app = Krita.instance()
+    json_str = app.readSetting(extension_name, name, undefined_str)
+    if json_str == undefined_str:
+        if default is Undefined:
+            raise ValueError((
+                    "Setting not found, and no default given."
+                    "(did get: extension_name={extension_name!r}, name={name!r})").format(**locals()))
+        else:
+            return default
+    else:
+        return json.loads(json_str)
 
 
 def write_setting(extension_name, name, value):
     app = Krita.instance()
-    app.writeSetting(extension_name, name, json.dumps({"value": value}))
+    app.writeSetting(extension_name, name, json.dumps(value))
 
 
 def krita_resource_dir():

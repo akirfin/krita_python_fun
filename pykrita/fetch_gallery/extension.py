@@ -42,10 +42,11 @@ class FetchGalleryExtension(Extension):
         Called once in Krita startup.
         """
         # hook app closing
-        notifier = Krita.instance().notifier()
-        notifier.applicationClosing.connect(self.shuttingDown)
-
+        app = Krita.instance()
         extension_name = self.objectName()
+
+        notifier = app.notifier()
+        notifier.applicationClosing.connect(self.shuttingDown)
 
         self._gallery_url = read_setting(
                 extension_name,
