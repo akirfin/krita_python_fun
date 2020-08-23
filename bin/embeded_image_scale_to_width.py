@@ -1,5 +1,4 @@
 """
-
 Sharing readme.md with Krita in plugin documentations.
 
 Write readme.md document and use html and relative image paths, then run this script for document.
@@ -9,15 +8,18 @@ adds embeded images to doument ie:
 Why so complicated...
 - filename must be "readme.md"
 - Krita QTextBrowser and GitHub both accept HTML.
-- QTextBrowser can't handle relative image paths (QTextBrowser local path not set)
+- QTextBrowser can't handle relative image paths (QTextBrowser.document() QTextDocument.DocumentUrl not set)
 - QTextBrowser absolute path of installed document is unknown
 - GitHub works best if relative path is used
 - QTextBrowser can use special "source" attribute vs. HTML "src" attribute
+- QTextBrowser uses last attribute if both src & source are used.
 - QTextBrowser accepts base64 embeded images
 - GitHub can't use base64 embeded images
 - bonus: for both "nice" image resolution is different.
-
+- bonus+: path separator \o/
+- bonus++: xml attribute order sucks!
 """
+
 import sys
 import os
 import re
@@ -25,10 +27,8 @@ from xml.etree import ElementTree
 
 from Qt.QtCore import Qt, QIODevice, QByteArray, QBuffer, QTimer
 from Qt.QtGui import QImage, QTextDocument
-from Qt.QtWidgets import QApplication, QWidget, QTextEdit
+from Qt.QtWidgets import QApplication, QTextEdit
 
-
-# _img_template = '<img src="{relative_path}" source="data:image/png;base64,{base64_data}" alt="title_image" title="Title"/>'
 
 def embeded_image_scale_to_width(src_path, width_scalar):
     qimage = QImage(src_path)
@@ -63,12 +63,14 @@ def embed_readme_images(readme_path):
     """
     readme_dir = os.path.dirname(readme_path)
 
-    editor = QTextEdit()
+    dada = None
     with open(readme_path) as f:
         dada = f.read()
-        editor.setText(dada)
-        #print(readme_path)
-        #print(dada)
+    # strip old embeded dada
+    dada = re.sub(r'source=\"data:image.*\"', "", dada)
+
+    editor = QTextEdit()
+    editor.setText(dada)
     editor.document().setMetaInformation(QTextDocument.DocumentUrl, readme_dir)
     html = editor.toHtml()
 
@@ -84,7 +86,6 @@ def embed_readme_images(readme_path):
 
     width_scalar = calculate_width_scalar(readme_dir, image_elements, 577.0)
 
-    # src = element.attrib.get("src")
     for img in image_elements:
         rel_src_path = img.attrib.get("src", "")
         if rel_src_path.startswith("data:image"):
@@ -114,27 +115,21 @@ def embed_readme_images(readme_path):
 
 
 def walk_pykrita_dir():
-    this_dir = os.path.dirname(sys.argv[0])
-    pykrita_dir = os.path.join(this_dir, "..", "pykrita")
-    for parent, folders, files in os.walk(pykrita_dir):
-        for file in files:
-            if file.lower() == "readme.md":
-                readme_path = os.path.join(parent, file)
-                embed_readme_images(readme_path)
-    print("done!")
+    try:
+        this_dir = os.path.dirname(sys.argv[0])
+        pykrita_dir = os.path.join(this_dir, "..", "pykrita")
+        for parent, folders, files in os.walk(pykrita_dir):
+            for file in files:
+                if file.lower() == "readme.md":
+                    readme_path = os.path.join(parent, file)
+                    embed_readme_images(readme_path)
+        print("done!")
+    finally:
+        app = QApplication.instance()
+        app.quit()
 
 
 if __name__ == '__main__':
-    """
-    ToDo:
-    Change so that path to readme.md is given, then this adds source="..." entry.
-    - remove_use_width == remove width="" and use it as scaling for empadded image.
-    """
     app = QApplication(sys.argv)
-
-    win = QWidget()
-    win.show()
-
-    ti = QTimer.singleShot(1000, walk_pykrita_dir)
-
+    _ = QTimer.singleShot(0, walk_pykrita_dir)
     sys.exit(app.exec_())
