@@ -20,26 +20,15 @@ Why so complicated...
 """
 import sys
 import os
+import re
+from xml.etree import ElementTree
 
 from Qt.QtCore import Qt, QIODevice, QByteArray, QBuffer, QTimer
 from Qt.QtGui import QImage, QTextDocument
 from Qt.QtWidgets import QApplication, QWidget, QTextEdit
-from Qt.QtXml import QDomDocument
 
 
 # _img_template = '<img src="{relative_path}" source="data:image/png;base64,{base64_data}" alt="title_image" title="Title"/>'
-
-def traverse_strip_style_xml_node_suck_sucks_suuuuck(node):
-    cursor = node.firstChild()
-    while not cursor.isNull():
-        if cursor.isElement():
-            element = cursor.toElement()
-            if not element.isNull():
-                if element.hasAttribute("style"):
-                    element.removeAttribute("style")
-        traverse_strip_style_xml_node_suck_sucks_suuuuck(cursor)
-        cursor = cursor.nextSibling()
-
 
 def embeded_image_scale_to_width(src_path, width_scalar):
     qimage = QImage(src_path)
@@ -53,15 +42,10 @@ def embeded_image_scale_to_width(src_path, width_scalar):
     return "data:image/jpeg;base64,{base64_data}".format(base64_data=base64_data)
 
 
-def iter_elements(node_list):
-    for index in range(node_list.count()):
-        yield node_list.at(index).toElement()
-
-
 def calculate_width_scalar(readme_dir, img_nodes, target_width):
     max_image_width = -1
-    for element in iter_elements(img_nodes):
-        src_attr = element.attribute("src")
+    for img in img_nodes:
+        src_attr = img.attrib.get("src", "")
         if src_attr.startswith("data:image"):
             continue
         src_path = os.path.abspath(os.path.join(readme_dir, src_attr))
@@ -87,25 +71,22 @@ def embed_readme_images(readme_path):
         #print(dada)
     editor.document().setMetaInformation(QTextDocument.DocumentUrl, readme_dir)
     html = editor.toHtml()
-    #print(html)
 
-    dom_doc = QDomDocument()
-    dom_doc.setContent(html)
+    image_elements = list()
+    root = ElementTree.fromstring(html)
+    for element in root.iter():
+        for sub in element[:]:
+            if sub.tag == "head":
+                element.remove(sub)
+        element.attrib.pop("style", None)
+        if element.tag == "img":
+            image_elements.append(element)
 
-    # remove <head> * </head>
-    for element in iter_elements(dom_doc.elementsByTagName("html")):
-        head = element.firstChildElement("head")
-        if not head.isNull():
-            element.removeChild(head)
+    width_scalar = calculate_width_scalar(readme_dir, image_elements, 577.0)
 
-    # remove style
-    traverse_strip_style_xml_node_suck_sucks_suuuuck(dom_doc)
-
-    img_nodes = dom_doc.elementsByTagName("img")
-    width_scalar = calculate_width_scalar(readme_dir, img_nodes, 577.0)
-
-    for element in iter_elements(img_nodes):
-        rel_src_path = element.attribute("src")
+    # src = element.attrib.get("src")
+    for img in image_elements:
+        rel_src_path = img.attrib.get("src", "")
         if rel_src_path.startswith("data:image"):
             print("Embeded src. skipping! (readme_path={readme_path!r})".format(**locals()))
             return
@@ -117,12 +98,17 @@ def embed_readme_images(readme_path):
                 rel_src_path = os.path.relpath(src_path, readme_dir)
                 rel_src_path = "./" + rel_src_path.replace("\\", "/")
                 # attribute order must be correct !!!
-                element.removeAttribute("src")
-                element.setAttribute("source", embeded_image_scale_to_width(src_path, width_scalar=width_scalar))
-                element.setAttribute("src", rel_src_path)
+                # ElementTree in python<3.8 uses sort(dict.items())
+                # sooo... lets make sure that there is alphaphetical dummy prefix...
+                new_attributes = [
+                        ("001_DEL_XML_SUCKS_src", rel_src_path),
+                        ("002_DEL_XML_SUCKS_source", embeded_image_scale_to_width(src_path, width_scalar=width_scalar))]
+                new_attributes.extend((k, v) for k, v in sorted(img.attrib.items()) if k not in {"src", "source"})
+                img.attrib.clear()
+                img.attrib.update(new_attributes)
 
-
-    html = dom_doc.toString()
+    html = ElementTree.tostring(root).decode()
+    html = re.sub(r"\d{3}_DEL_XML_SUCKS_", "", html)
     with open(readme_path, "wb") as f:
         f.write(html.encode("utf-8"))
 
