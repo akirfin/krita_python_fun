@@ -21,13 +21,25 @@ Why so complicated...
 import sys
 import os
 
-from Qt.QtCore import Qt, QIODevice, QByteArray, QBuffer
+from Qt.QtCore import Qt, QIODevice, QByteArray, QBuffer, QTimer
 from Qt.QtGui import QImage, QTextDocument
 from Qt.QtWidgets import QApplication, QWidget, QTextEdit
 from Qt.QtXml import QDomDocument
 
 
 # _img_template = '<img src="{relative_path}" source="data:image/png;base64,{base64_data}" alt="title_image" title="Title"/>'
+
+def traverse_strip_style_xml_node_suck_sucks_suuuuck(node):
+    cursor = node.firstChild()
+    while not cursor.isNull():
+        if cursor.isElement():
+            element = cursor.toElement()
+            if not element.isNull():
+                if element.hasAttribute("style"):
+                    element.removeAttribute("style")
+        traverse_strip_style_xml_node_suck_sucks_suuuuck(cursor)
+        cursor = cursor.nextSibling()
+
 
 def embeded_image_scale_to_width(src_path, width_scalar):
     qimage = QImage(src_path)
@@ -69,20 +81,34 @@ def embed_readme_images(readme_path):
 
     editor = QTextEdit()
     with open(readme_path) as f:
-        editor.setText(f.read())
+        dada = f.read()
+        editor.setText(dada)
+        #print(readme_path)
+        #print(dada)
     editor.document().setMetaInformation(QTextDocument.DocumentUrl, readme_dir)
+    html = editor.toHtml()
+    #print(html)
 
     dom_doc = QDomDocument()
-    dom_doc.setContent(editor.toHtml())
-    img_nodes = dom_doc.elementsByTagName("img")
+    dom_doc.setContent(html)
 
+    # remove <head> * </head>
+    for element in iter_elements(dom_doc.elementsByTagName("html")):
+        head = element.firstChildElement("head")
+        if not head.isNull():
+            element.removeChild(head)
+
+    # remove style
+    traverse_strip_style_xml_node_suck_sucks_suuuuck(dom_doc)
+
+    img_nodes = dom_doc.elementsByTagName("img")
     width_scalar = calculate_width_scalar(readme_dir, img_nodes, 577.0)
-    print(width_scalar)
 
     for element in iter_elements(img_nodes):
         rel_src_path = element.attribute("src")
         if rel_src_path.startswith("data:image"):
-            continue
+            print("Embeded src. skipping! (readme_path={readme_path!r})".format(**locals()))
+            return
         if rel_src_path:
             src_path = os.path.abspath(os.path.join(readme_dir, rel_src_path))
             if not os.path.isfile(src_path):
@@ -90,12 +116,15 @@ def embed_readme_images(readme_path):
             else:
                 rel_src_path = os.path.relpath(src_path, readme_dir)
                 rel_src_path = "./" + rel_src_path.replace("\\", "/")
+                # attribute order must be correct !!!
+                element.removeAttribute("src")
                 element.setAttribute("source", embeded_image_scale_to_width(src_path, width_scalar=width_scalar))
                 element.setAttribute("src", rel_src_path)
 
+
     html = dom_doc.toString()
-    with open(readme_path + "_ng", "w") as f:
-        f.write(html)
+    with open(readme_path, "wb") as f:
+        f.write(html.encode("utf-8"))
 
 
 def walk_pykrita_dir():
@@ -106,6 +135,7 @@ def walk_pykrita_dir():
             if file.lower() == "readme.md":
                 readme_path = os.path.join(parent, file)
                 embed_readme_images(readme_path)
+    print("done!")
 
 
 if __name__ == '__main__':
@@ -119,30 +149,6 @@ if __name__ == '__main__':
     win = QWidget()
     win.show()
 
-    walk_pykrita_dir()
+    ti = QTimer.singleShot(1000, walk_pykrita_dir)
 
     sys.exit(app.exec_())
-
-    #img_tag = embeded_image_scale_to_width(
-    #    r"D:\projects\krita_python_fun\pykrita\arc_welding_tool\resources\title_image.jpg",
-    #    "./resources/title_image.jpg",
-    #    577)
-    # print(img_tag)
-
-    #img_tag = embeded_image_scale_to_width(
-    #    r"D:\projects\krita_python_fun\pykrita\camera_layer\resources\title_image.jpg",
-    #    "./resources/title_image.jpg",
-    #    577)
-    # print(img_tag)
-
-    #img_tag = embeded_image_scale_to_width(
-    #    r"D:\projects\krita_python_fun\pykrita\fetch_gallery\resources\title_image.jpg",
-    #    "./resources/title_image.jpg",
-    #    577)
-    # print(img_tag)
-
-    #img_tag = embeded_image_scale_to_width(
-    #    r"D:\projects\krita_python_fun\pykrita\layer_meta_data\resources\title_image.jpg",
-    #    "./resources/title_image.jpg",
-    #    577)
-    #print(img_tag)
