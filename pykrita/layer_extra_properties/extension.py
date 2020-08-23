@@ -4,7 +4,6 @@ Layer extra properties extension
 
 ToDo:
     - option to suppress JSON path in LayerExtraPropertiesWidget (used when custom layer properties widget exits.)
-    - solve settings
 
 """
 
@@ -24,15 +23,14 @@ from layer_extra_properties.common.utils_qt import \
         find_menu, create_menu, create_action
 
 from layer_extra_properties.common.utils_kis import \
-        write_extension_action_file
+        write_extension_action_file, read_setting, write_setting
 
 from layer_extra_properties.ui.layer_properties_hook import \
         LayerPropertiesHook
 
 
 class LayerExtraPropertiesExtension(Extension):
-    settings_path = "plugin_settings/layer_extra_properties"
-    show_layer_extra_properties_setting = settings_path + "/show_layer_extra_properties"
+    show_layer_extra_properties_setting = "show_layer_extra_properties"
 
     def __init__(self, parent):
         super(LayerExtraPropertiesExtension, self).__init__(parent)
@@ -47,12 +45,11 @@ class LayerExtraPropertiesExtension(Extension):
         notifier = Krita.instance().notifier()
         notifier.applicationClosing.connect(self.shuttingDown)
 
-        # when is .action file applied?
-        settings = QSettings()
-        show_layer_extra_properties = settings.value(
+        extension_name = self.objectName()
+        show_layer_extra_properties = read_setting(
+                extension_name,
                 self.show_layer_extra_properties_setting,
-                defaultValue=True,
-                type=bool)
+                default=True)
 
         # create actions here and share "instance" to other places.
         self._show_layer_extra_properties = create_action(
@@ -63,6 +60,7 @@ class LayerExtraPropertiesExtension(Extension):
                 triggered=self.show_layer_extra_properties,
                 parent=self)  # I own the action!
 
+        # when is .action file applied?
         # write_extension_action_file(self)
 
         # set initial state
@@ -73,8 +71,9 @@ class LayerExtraPropertiesExtension(Extension):
         """
         Called once in Krita shutting down.
         """
-        settings = QSettings()
-        settings.setValue(
+        extension_name = self.objectName()
+        write_setting(
+                extension_name,
                 self.show_layer_extra_properties_setting,
                 self._show_layer_extra_properties.isChecked())
         LayerPropertiesHook.unregister()

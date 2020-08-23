@@ -4,6 +4,7 @@ Small common scripts for Krita
 
 """
 import os
+import json
 from contextlib import contextmanager
 
 from krita import Krita, View
@@ -12,7 +13,8 @@ from PyQt5.QtCore import QStandardPaths
 from PyQt5.QtGui import QImage
 
 from .utils_py import \
-    first, last
+    first, last, Undefined
+
 
 def walk_nodes(nodes, depth_first=True):
     """
@@ -191,6 +193,23 @@ def push_qimage_data_to_node(qimage, node, x=None, y=None, width=None, height=No
         ptr = qimage.constBits()
         ptr.setsize(qimage.byteCount())
         node.setPixelData(bytes(ptr.asarray()), x, y, width, height)
+
+
+def read_setting(group, name, default=Undefined):
+    app = Krita.instance()
+    json_data = app.readSetting(group, name, "{}")
+    value_dct = json.loads(json_data)
+    if value_dct:
+        return value_dct["value"]
+    elif default is not Undefined:
+        return default
+    else:
+        raise ValueError("No setting, and no default. (did get: group={group!r}, name={name!r})".format(**locals()))
+
+
+def write_setting(extension_name, name, value):
+    app = Krita.instance()
+    app.writeSetting(extension_name, name, json.dumps({"value": value}))
 
 
 def krita_resource_dir():

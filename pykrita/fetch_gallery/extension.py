@@ -5,7 +5,6 @@ Fetch gallery
 ToDo:
     - custom dialog
     - dir(krita) there was fome pixelformat thingies..
-    - solve settings
 
 """
 
@@ -25,17 +24,17 @@ from fetch_gallery.common.utils_qt import \
         fetch_qimage_from_url, find_menu, create_menu, create_action
 
 from fetch_gallery.common.utils_kis import \
-        create_document_from_qimage, write_extension_action_file
+        create_document_from_qimage, write_extension_action_file, read_setting, write_setting
 
 
 class FetchGalleryExtension(Extension):
-    settings_path = "plugin_settings/fetch_gallery"
-    gallery_url_setting = settings_path + "/gallery_url"
-    load_limit_setting = settings_path + "/load_limit"
-    image_element_re_setting = settings_path + "/image_element_re"
+    gallery_url_setting = "gallery_url"
+    load_limit_setting = "load_limit"
+    image_element_re_setting = "image_element_re"
 
     def __init__(self, parent):
         super(FetchGalleryExtension, self).__init__(parent)
+        self.setObjectName("fetch_gallery_extension")
 
 
     def setup(self):
@@ -46,20 +45,20 @@ class FetchGalleryExtension(Extension):
         notifier = Krita.instance().notifier()
         notifier.applicationClosing.connect(self.shuttingDown)
 
-        # when is .action file applied?
-        settings = QSettings()
-        self._gallery_url = settings.value(
+        extension_name = self.objectName()
+
+        self._gallery_url = read_setting(
+                extension_name,
                 self.gallery_url_setting,
-                defaultValue="https://krita-artists.org/tag/featured",
-                type=str)
-        self._image_element_re = re.compile(settings.value(
+                default="https://krita-artists.org/tag/featured")
+        self._image_element_re = re.compile(read_setting(
+                extension_name,
                 self.image_element_re_setting,
-                defaultValue=r"<meta itemprop='image' content='(https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg)'>",
-                type=str))
-        self._load_limit = settings.value(
+                default=r"<meta itemprop='image' content='(https://krita-artists\.org/uploads/default/optimized/2X/[a-zA-Z0-9_/]+\.jpeg)'>"))
+        self._load_limit = read_setting(
+                extension_name,
                 self.load_limit_setting,
-                defaultValue=4,
-                type=int)
+                default=4)
 
         # create actions here and share "instance" to other places.
         self._fetch_gallery_action = create_action(
@@ -68,6 +67,7 @@ class FetchGalleryExtension(Extension):
                 triggered=self.fetch_gallery,
                 parent=self)  # I own the action!
 
+        # when is .action file applied?
         # write_extension_action_file(self)
 
 
@@ -75,14 +75,17 @@ class FetchGalleryExtension(Extension):
         """
         Called once in Krita shutting down.
         """
-        settings = QSettings()
-        settings.setValue(
+        extension_name = self.objectName()
+        write_setting(
+                extension_name,
                 self.gallery_url_setting,
                 self._gallery_url)
-        settings.setValue(
+        write_setting(
+                extension_name,
                 self.image_element_re_setting,
                 self._image_element_re.pattern)
-        settings.setValue(
+        write_setting(
+                extension_name,
                 self.load_limit_setting,
                 self._load_limit)
 

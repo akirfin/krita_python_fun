@@ -5,7 +5,6 @@ Arc Welding! (now we're cooking with GAS)
 ToDo:
     - view/canvas trapping
     - using canvas_transform to solve transform.
-    - solve settings
 
 """
 
@@ -21,7 +20,7 @@ from arc_welding_tool.common.utils_qt import \
         find_menu, create_menu, create_action
 
 from layer_extra_properties.common.utils_kis import \
-        write_extension_action_file
+        write_extension_action_file, read_setting, write_setting
 
 from arc_welding_tool.canvas_transform import \
         get_canvas_transform, get_canvas_qcanvas
@@ -35,11 +34,10 @@ class ArcWeldingToolExtension(Extension):
     Add tool to Krita.
     (this NOT official way to add new tools.)
     """
-    settings_path = "plugin_settings/arc_welding_tool"
-    # some_setting = settings_path +"/some"
 
     def __init__(self, parent):
         super(ArcWeldingToolExtension, self).__init__(parent)
+        self.objectName("arc_welding_tool_extension")
 
 
     def setup(self):
@@ -50,10 +48,8 @@ class ArcWeldingToolExtension(Extension):
         notifier = Krita.instance().notifier()
         notifier.applicationClosing.connect(self.shuttingDown)
 
-        settings = QSettings()
-        # config_path = QStandardPaths.writableLocation(QStandardPaths.GenericConfigLocation)
-        # self.settings = QSettings(config_path + "/krita/arc_welding_tool", QSettings.IniFormat)
-        # self._some_value = settings.value(self.some_setting, defaultValue=, type=)
+        extension_name = self.objectName()
+        # value = read_setting(extension_name, "setting_name", default=None)
 
         # create actions here and share "instance" to other places.
         self._activate_arc_welding_action = create_action(
@@ -62,6 +58,7 @@ class ArcWeldingToolExtension(Extension):
                 triggered=self.activate_arc_welding,
                 parent=self)  # I own the action!
 
+        # when is .action file applied?
         # write_extension_action_file(self)
 
 
@@ -69,8 +66,8 @@ class ArcWeldingToolExtension(Extension):
         """
         Called once in Krita shutting down.
         """
-        settings = QSettings()
-        # settings.setValue(self.some_setting, self._some_value)
+        extension_name = self.objectName()
+        # write_setting(extension_name, "setting_name", value)
 
 
     def createActions(self, window):

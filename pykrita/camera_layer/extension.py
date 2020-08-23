@@ -6,7 +6,6 @@ https://code.qt.io/cgit/pyside/pyside-setup.git/tree/examples/multimedia/camera.
 
 ToDo:
     - handle custom layer properties widget
-    - solve settings
 
 """
 
@@ -30,7 +29,7 @@ from PyQt5.QtMultimedia import \
         QCameraInfo, QCamera, QCameraImageCapture
 
 from camera_layer.common.utils_kis import \
-        find_document_for, write_extension_action_file
+        find_document_for, write_extension_action_file, read_setting, write_setting
 
 from camera_layer.common.utils_py import \
         first, last, underscore
@@ -50,11 +49,10 @@ class CameraLayerExtension(Extension):
     Add layer type to Krita.
     (this NOT official way to add layer types.)
     """
-    settings_path = "plugin_settings/camera_layer"
-    # some_setting = settings_path +"/some"
 
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)
+        self.setObjectName("camera_layer_extension")
         self._camera_layers = list()  # [(node, camera_layer), ...]
 
 
@@ -66,8 +64,8 @@ class CameraLayerExtension(Extension):
         notifier = Krita.instance().notifier()
         notifier.applicationClosing.connect(self.shuttingDown)
 
-        settings = QSettings()
-        # self._some_value = settings.value(self.some_setting, defaultValue=, type=)
+        extension_name = self.objectName()
+        # value = read_setting(extension_name, "setting_name", default=None)
 
         # create actions here and share "instance" to other places.
         self._create_camera_layer_action = create_action(
@@ -76,6 +74,7 @@ class CameraLayerExtension(Extension):
                 triggered=self.create_camera_layer,
                 parent=self)  # I own the action!
 
+        # when is .action file applied?
         # write_extension_action_file(self)
 
 
@@ -83,8 +82,8 @@ class CameraLayerExtension(Extension):
         """
         Called once in Krita shutting down.
         """
-        settings = QSettings()
-        # settings.setValue(self.some_setting, self._some_value)
+        extension_name = self.objectName()
+        # write_setting(extension_name, "setting_name", value)
 
 
     def createActions(self, window):
