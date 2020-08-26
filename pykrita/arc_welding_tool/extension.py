@@ -34,10 +34,11 @@ class ArcWeldingToolExtension(Extension):
     Add tool to Krita.
     (this NOT official way to add new tools.)
     """
+    plugin_id = "arc_welding_tool_extension"
 
     def __init__(self, parent):
         super(ArcWeldingToolExtension, self).__init__(parent)
-        self.objectName("arc_welding_tool_extension")
+        self.objectName(ArcWeldingToolExtension.plugin_id)
 
 
     def setup(self):

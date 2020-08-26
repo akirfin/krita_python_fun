@@ -49,10 +49,11 @@ class CameraLayerExtension(Extension):
     Add layer type to Krita.
     (this NOT official way to add layer types.)
     """
+    plugin_id = "camera_layer_extension"    
 
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)
-        self.setObjectName("camera_layer_extension")
+        self.setObjectName(CameraLayerExtension.plugin_id)
         self._camera_layers = list()  # [(node, camera_layer), ...]
 
 

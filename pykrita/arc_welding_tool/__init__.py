@@ -48,10 +48,15 @@ def register():
     """
     add_search_paths()
 
-    from arc_welding_tool.extension import ArcWeldingToolExtension
+    from arc_welding_tool.extension import \
+            ArcWeldingToolExtension
 
     app = Krita.instance()
-    app.addExtension(ArcWeldingToolExtension(app))
+    registered = set(e.objectName() for e in app.extensions())
+    plugin_id = ArcWeldingToolExtension.plugin_id
+    if plugin_id not in registered:
+        extension = ArcWeldingToolExtension(app)
+        app.addExtension(extension)
 
 
 def unregister():

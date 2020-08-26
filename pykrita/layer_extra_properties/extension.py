@@ -30,11 +30,12 @@ from layer_extra_properties.ui.layer_properties_hook import \
 
 
 class LayerExtraPropertiesExtension(Extension):
+    plugin_id = "layer_extra_properties_extension"
     show_layer_extra_properties_setting = "show_layer_extra_properties"
 
     def __init__(self, parent):
         super(LayerExtraPropertiesExtension, self).__init__(parent)
-        self.setObjectName("layer_extra_properties_extension")
+        self.setObjectName(LayerExtraPropertiesExtension.plugin_id)
 
 
     def setup(self):

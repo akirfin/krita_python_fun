@@ -35,13 +35,12 @@ def add_PYTHONPATH():
 def load_plugins():
     """
     Make sure that depending plugins are registered.
-
+    """
     try:
         import layer_extra_properties
         layer_extra_properties.register()
     except:
         raise RuntimeError("Plugin dependency, layer_extra_properties plugin is needed!")
-    """
 
 
 def register():
@@ -50,14 +49,17 @@ def register():
     Add extensions & dockers to Krita.
     """
     # add_PYTHONPATH()
-    # load_plugins()  how to do this correctly ?
+    load_plugins()  # how to do this correctly ?
 
     from camera_layer.extension import \
             CameraLayerExtension
 
     app = Krita.instance()
-    extension = CameraLayerExtension(app)
-    app.addExtension(extension)
+    registered = set(e.objectName() for e in app.extensions())
+    plugin_id = CameraLayerExtension.plugin_id
+    if plugin_id not in registered:
+        extension = CameraLayerExtension(app)
+        app.addExtension(extension)
 
 
 def unregister():

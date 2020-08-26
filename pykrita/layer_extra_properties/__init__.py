@@ -39,11 +39,15 @@ def register():
     """
     # add_PYTHONPATH()
 
-    from layer_extra_properties.extension import LayerExtraPropertiesExtension
+    from layer_extra_properties.extension import \
+            LayerExtraPropertiesExtension
 
     app = Krita.instance()
-    extension = LayerExtraPropertiesExtension(app)
-    app.addExtension(extension)
+    registered = set(e.objectName() for e in app.extensions())
+    plugin_id = LayerExtraPropertiesExtension.plugin_id
+    if plugin_id not in registered:
+        extension = LayerExtraPropertiesExtension(app)
+        app.addExtension(extension)
 
 
 def unregister():

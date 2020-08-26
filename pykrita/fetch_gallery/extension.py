@@ -28,13 +28,14 @@ from fetch_gallery.common.utils_kis import \
 
 
 class FetchGalleryExtension(Extension):
+    plugin_id = "fetch_gallery_extension"
     gallery_url_setting = "gallery_url"
     load_limit_setting = "load_limit"
     image_element_re_setting = "image_element_re"
 
     def __init__(self, parent):
         super(FetchGalleryExtension, self).__init__(parent)
-        self.setObjectName("fetch_gallery_extension")
+        self.setObjectName(FetchGalleryExtension.plugin_id)
 
 
     def setup(self):

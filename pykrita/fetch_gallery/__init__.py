@@ -39,10 +39,15 @@ def register():
     """
     # add_PYTHONPATH()
 
-    from fetch_gallery.extension import FetchGalleryExtension
+    from fetch_gallery.extension import \
+            FetchGalleryExtension
 
     app = Krita.instance()
-    app.addExtension(FetchGalleryExtension(app))
+    registered = set(e.objectName() for e in app.extensions())
+    plugin_id = FetchGalleryExtension.plugin_id
+    if plugin_id not in registered:
+        extension = FetchGalleryExtension(app)
+        app.addExtension(extension)
 
 
 def unregister():
