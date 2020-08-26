@@ -11,6 +11,7 @@ from krita import Krita, View
 
 from PyQt5.QtCore import QStandardPaths
 from PyQt5.QtGui import QImage
+from PyQt5.QtWidgets import QMdiArea
 
 from .utils_py import \
     first, last, Undefined
@@ -59,6 +60,22 @@ def get_active_node():
         return document.activeNode()
 
 
+def set_active_document(document):
+    """
+    Fixed Krita.setActiveDocument(document)
+    """
+    app = Krita.instance()
+    for window in app.windows():
+        for v_i, view in enumerate(window.views()):
+            if view.document() == document:
+                qwindow = window.qwindow()
+                central = qwindow.centralWidget()
+                area = central.findChild(QMdiArea)
+                sub = area.subWindowList()[v_i]
+                area.setActiveSubWindow(sub)
+                return True
+
+
 @contextmanager
 def keep_batch_mode(new_batch_mode=None):
     app = Krita.instance()
@@ -78,11 +95,11 @@ def keep_active_document(new_document=None):
     old_document = app.activeDocument()
     try:
         if new_document is not None:
-            app.setActiveDocument(new_document)  # broken!
+            set_active_document(new_document)
         yield app.activeDocument()
     finally:
         if old_document is not None:
-            app.setActiveDocument(old_document)  # broken!
+            set_active_document(old_document)
 
 
 @contextmanager

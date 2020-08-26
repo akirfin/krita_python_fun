@@ -23,12 +23,12 @@ from PyQt5.QtCore import \
         QObject, QSize
 
 from PyQt5.QtGui import \
-        QPalette, QColor
+        QPalette, QColor, QFont
 
 from PyQt5.QtWidgets import \
         QWidget, QFrame, QLabel, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, \
         QLayout, QMenuBar, QFormLayout, QHBoxLayout, QVBoxLayout, QToolButton, QScrollArea, \
-        QGraphicsDropShadowEffect
+        QGraphicsDropShadowEffect, QPlainTextEdit
 
 from layer_extra_properties.common.utils_py import \
         first, last, UnicodeType, BytesType
@@ -614,3 +614,39 @@ class StringWidget(QLineEdit):
     data = QProperty(UnicodeType, fget=get_data, fset=set_data, notify=data_changed, user=True)
 
 data_widget_mapper.register(UnicodeType, StringWidget)
+
+
+class BytesWidget(QPlainTextEdit):
+    def __init__(self, parent=None):
+        super(BytesEditor, self).__init__(parent=parent)
+        self._data = b''
+        self.setReadOnly(True)
+        self.setLineWrapMode(QPlainTextEdit.NoWrap)
+        self.setForegroundRole(QPalette.BrightText)  # or green text?
+        self.setBackgroundRole(QPalette.Dark)  # dark background
+        self.setFont(QFont("Courier"))
+
+
+    def _chunks(self, text, chunk_length):
+        for chunk in (text[i:i + chunk_length] for i in range(0, len(text), chunk_length)):
+            yield chunk
+
+
+    def get_data(self):
+        # hex_text = self.toPlainText()
+        # hex_str = re.sub(r"\s", "", hex_text)
+        # data = bytes.fromhex(hex_str)
+        # return data
+        return self._data
+
+
+    def set_data(self, new_data):
+        self._data = new_data
+        new_data = bytes(new_data)
+        hex_str = new_data.hex()
+        sc = self._chunks
+        hex_text = "\n".join(" ".join(sc(line, 2)) for line in sc(hex_str, 32))
+        self.setPlainText(hex_text)
+
+
+data_widget_mapper.register(BytesType, BytesWidget)
