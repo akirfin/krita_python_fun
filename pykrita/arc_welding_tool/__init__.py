@@ -35,7 +35,6 @@ def add_PYTHONPATH():
 
 
 def add_search_paths():
-    # add_PYTHONPATH()
     this_dir = os.path.dirname(__file__)
     resource_dir = os.path.join(this_dir, "resources")
     QDir.addSearchPath("audio", resource_dir)
@@ -46,6 +45,7 @@ def register():
     Register Krita plugin.
     Add extensions & dockers to Krita.
     """
+    # add_PYTHONPATH()
     add_search_paths()
 
     from arc_welding_tool.extension import \
