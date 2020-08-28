@@ -256,6 +256,13 @@ serializer.register(
                 (u"items", tuple(obj))
                 ]))
 
+serializer.register(
+        data_cls=bytes,
+        from_dict=lambda dct: bytes(base64.b64decode(dct[u"base64"])),
+        to_dict=lambda obj: oDict([
+                (u"base64", base64.b64encode(obj))
+                ]))
+
 
 ToDo_check_details = """
 serializer.register(
@@ -290,13 +297,6 @@ serializer.register(
 serializer.register(
         data_cls=bytearray,
         from_dict=lambda dct: bytearray(base64.urlsafe_b64decode(dct[u"base64"])),
-        to_dict=lambda obj: oDict([
-                (u"base64", base64.urlsafe_b64decode(obj))
-                ]))
-
-serializer.register(
-        data_cls=bytes,
-        from_dict=lambda dct: bytes(base64.urlsafe_b64decode(dct[u"base64"])),
         to_dict=lambda obj: oDict([
                 (u"base64", base64.urlsafe_b64decode(obj))
                 ]))

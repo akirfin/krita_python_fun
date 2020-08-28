@@ -32,32 +32,24 @@ def add_PYTHONPATH():
             _memo.add(path)
 
 
-def load_plugins():
-    """
-    Make sure that depending plugins are registered.
-    """
-    try:
-        import layer_extra_properties
-        layer_extra_properties.register()
-    except:
-        raise RuntimeError("Plugin dependency, layer_extra_properties plugin is needed!")
-
-
 def register():
     """
     Register Krita plugin.
     Add extensions & dockers to Krita.
     """
     # add_PYTHONPATH()
-    load_plugins()  # how to do this correctly ?
+    try:
+        # how to do this correctly ?
+        import layer_extra_properties
+    except:
+        raise RuntimeError("Plugin dependency, layer_extra_properties plugin is needed!")
 
     from camera_layer.extension import \
             CameraLayerExtension
 
     app = Krita.instance()
-    registered = set(e.objectName() for e in app.extensions())
-    plugin_id = CameraLayerExtension.plugin_id
-    if plugin_id not in registered:
+    extensions = (type(e) for e in app.extensions())
+    if CameraLayerExtension not in extensions:
         extension = CameraLayerExtension(app)
         app.addExtension(extension)
 
@@ -69,10 +61,14 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    app = Krita.instance()
+    from camera_layer.extension import \
+            CameraLayerExtension
 
-    app.removeExtension('extension_id???')
-    app.removeDockWidgetFactory('docker_id???')
+    app = Krita.instance()
+    extensions = {type(e): e for e in app.extensions()}
+    extension = extensions.get(CameraLayerExtension)
+    if extension:
+        app.removeExtension(extension)
 
     del sys.modules["Extension modules..."]
 

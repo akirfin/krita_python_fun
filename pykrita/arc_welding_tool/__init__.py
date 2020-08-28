@@ -52,9 +52,8 @@ def register():
             ArcWeldingToolExtension
 
     app = Krita.instance()
-    registered = set(e.objectName() for e in app.extensions())
-    plugin_id = ArcWeldingToolExtension.plugin_id
-    if plugin_id not in registered:
+    extensions = (type(e) for e in app.extensions())
+    if ArcWeldingToolExtension not in extensions:
         extension = ArcWeldingToolExtension(app)
         app.addExtension(extension)
 
@@ -66,10 +65,14 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    app = Krita.instance()
+    from arc_welding_tool.extension import \
+            ArcWeldingToolExtension
 
-    app.removeExtension('extension_id???')
-    app.removeDockWidgetFactory('docker_id???')
+    app = Krita.instance()
+    extensions = {type(e): e for e in app.extensions()}
+    extension = extensions.get(ArcWeldingToolExtension)
+    if extension:
+        app.removeExtension(extension)
 
     del sys.modules["Extension modules..."]
 

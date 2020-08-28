@@ -173,14 +173,15 @@ class DataSerializer(object):
             return obj
         elif isinstance(obj, Mapping):
             cls_name = obj.get("__type__")
-            dct = self._dict_factory((self.from_dict(k), self.from_dict(v)) for k, v in obj.items() if k != "__type__")
-            if cls_name:
+            if cls_name in self._registry:
+                dct = self._dict_factory((self.from_dict(k), self.from_dict(v)) for k, v in obj.items() if k != "__type__")
                 coder = self._registry[cls_name]
                 if coder.from_dict is None:
                     return coder.data_cls(**dct)
                 else:
                     return coder.from_dict(dct)
             else:
+                dct = self._dict_factory((self.from_dict(k), self.from_dict(v)) for k, v in obj.items())
                 return dct
         elif isinstance(obj, Iterable):
             return [self.from_dict(v) for v in obj]
@@ -255,6 +256,13 @@ serializer.register(
                 (u"items", tuple(obj))
                 ]))
 
+serializer.register(
+        data_cls=bytes,
+        from_dict=lambda dct: bytes(base64.b64decode(dct[u"base64"])),
+        to_dict=lambda obj: oDict([
+                (u"base64", base64.b64encode(obj))
+                ]))
+
 
 ToDo_check_details = """
 serializer.register(
@@ -289,13 +297,6 @@ serializer.register(
 serializer.register(
         data_cls=bytearray,
         from_dict=lambda dct: bytearray(base64.urlsafe_b64decode(dct[u"base64"])),
-        to_dict=lambda obj: oDict([
-                (u"base64", base64.urlsafe_b64decode(obj))
-                ]))
-
-serializer.register(
-        data_cls=bytes,
-        from_dict=lambda dct: bytes(base64.urlsafe_b64decode(dct[u"base64"])),
         to_dict=lambda obj: oDict([
                 (u"base64", base64.urlsafe_b64decode(obj))
                 ]))

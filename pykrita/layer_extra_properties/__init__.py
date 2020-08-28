@@ -43,9 +43,8 @@ def register():
             LayerExtraPropertiesExtension
 
     app = Krita.instance()
-    registered = set(e.objectName() for e in app.extensions())
-    plugin_id = LayerExtraPropertiesExtension.plugin_id
-    if plugin_id not in registered:
+    extensions = (type(e) for e in app.extensions())
+    if LayerExtraPropertiesExtension not in extensions:
         extension = LayerExtraPropertiesExtension(app)
         app.addExtension(extension)
 
@@ -57,11 +56,14 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    from layer_extra_properties.ui.layer_properties_hook import \
-            LayerPropertiesHook
+    from layer_extra_properties.extension import \
+            LayerExtraPropertiesExtension
 
-    if LayerPropertiesHook.is_registered():
-        LayerPropertiesHook.unregister()
+    app = Krita.instance()
+    extensions = {type(e): e for e in app.extensions()}
+    extension = extensions.get(LayerExtraPropertiesExtension)
+    if extension:
+        app.removeExtension(extension)
 
     del sys.modules["Extension modules..."]
 

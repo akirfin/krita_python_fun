@@ -43,9 +43,8 @@ def register():
             FetchGalleryExtension
 
     app = Krita.instance()
-    registered = set(e.objectName() for e in app.extensions())
-    plugin_id = FetchGalleryExtension.plugin_id
-    if plugin_id not in registered:
+    extensions = (type(e) for e in app.extensions())
+    if FetchGalleryExtension not in extensions:
         extension = FetchGalleryExtension(app)
         app.addExtension(extension)
 
@@ -57,10 +56,14 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    app = Krita.instance()
+    from fetch_gallery.extension import \
+            FetchGalleryExtension
 
-    app.removeExtension('extension_id???')
-    app.removeDockWidgetFactory('docker_id???')
+    app = Krita.instance()
+    extensions = {type(e): e for e in app.extensions()}
+    extension = extensions.get(FetchGalleryExtension)
+    if extension:
+        app.removeExtension(extension)
 
     del sys.modules["Extension modules..."]
 

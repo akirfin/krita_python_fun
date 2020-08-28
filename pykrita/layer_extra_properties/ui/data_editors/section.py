@@ -1,3 +1,4 @@
+from enum import IntEnum
 from collections import OrderedDict as oDict
 try:
     from collections.abc import Mapping, Iterable
@@ -9,25 +10,29 @@ from PyQt5.QtCore import pyqtSlot as QSlot
 from PyQt5.QtCore import pyqtSignal as QSignal
 from PyQt5.QtCore import pyqtProperty as QProperty
 
-from PyQt5.QtCore import \
-        QObject
-
 from PyQt5.QtGui import \
         QPalette, QColor
 
 from PyQt5.QtWidgets import \
-        QWidget, QFrame, QLabel, QLineEdit, QSpinBox, QDoubleSpinBox, QCheckBox, \
-        QMenuBar, QFormLayout, QHBoxLayout, QVBoxLayout, QToolButton, QGraphicsDropShadowEffect
+        QWidget, QFrame, QLabel, QMenuBar, QHBoxLayout, QVBoxLayout, \
+        QToolButton, QGraphicsDropShadowEffect
 
 from layer_extra_properties.common.utils_py import \
         first, last, UnicodeType, BytesType
 
 
+class Folding(IntEnum):
+    COLLAPSED = 0
+    EXPANDED = 1
+
+
 class TitleBar(QFrame):
-    def __init__(self, parent=None):
+    def __init__(self, foldable=None, folding=None,  parent=None):
         super(TitleBar, self).__init__(parent=parent)
         self.setObjectName("title_bar")
         self.create_ui()
+        self.set_foldable(True if foldable is None else foldable)
+        self.set_folding(Folding.COLLAPSED if folding is None else folding)
 
 
     def create_ui(self):
@@ -46,6 +51,7 @@ class TitleBar(QFrame):
         # folding button
         self._folding = QToolButton()
         self._folding.setCheckable(True)
+        self._folding.setChecked(True)
         self._folding.setStyleSheet(
                         ('.QToolButton {border: none;}'
                          '.QToolButton:hover {border: 1px;}'
@@ -67,25 +73,45 @@ class TitleBar(QFrame):
         layout.addWidget(self._menu_bar)
         # connect signals
         self._folding.toggled.connect(self.on_folding_toggled)
-        self._folding.toggled.connect(self.folding_changed)
+        self._folding.toggled.connect(lambda c: self.folding_changed.emit(Folding.EXPANDED if c else Folding.COLLAPSED))
 
 
     def on_folding_toggled(self, checked):
         self._folding.setArrowType(Qt.DownArrow if checked else Qt.RightArrow)
 
 
+    def get_foldable(self):
+        return self._folding.isVisibleTo(self)
+
+
+    @QSlot(bool)
+    def set_foldable(self, new_foldable):
+        if not new_foldable:
+            # about to remove ability to fold, do expanding!
+            self.folding = Folding.EXPANDED
+        self._folding.setVisible(new_foldable)
+
+
+    foldable = QProperty(bool, fget=get_foldable, fset=set_foldable)
+
+
     def get_folding(self):
         return self._folding.isChecked()
 
 
-    @QSlot(bool)
+    @QSlot(Folding)
     def set_folding(self, new_folding):
-        self._folding.setChecked(new_folding)
+        if not self.foldable:
+            return  # no folding!
+        if new_folding == Folding.COLLAPSED:
+            self._folding.setChecked(False)
+        else:
+            self._folding.setChecked(True)
         # toggled signal is chained folding_changed
 
 
-    folding_changed = QSignal(bool)
-    folding = QProperty(bool, fget=get_folding, fset=set_folding, notify=folding_changed, user=True)
+    folding_changed = QSignal(Folding)
+    folding = QProperty(Folding, fget=get_folding, fset=set_folding, notify=folding_changed, user=True)
 
 
     def get_title(self):
@@ -112,22 +138,20 @@ class TitleBar(QFrame):
             e.ignore()
             return
         if hit_test(e.pos()):
-            old_state = self._folding.isChecked()
-            self._folding.setChecked(not old_state)
+            new_state = Folding.COLLAPSED if self.get_folding() == Folding.EXPANDED else Folding.EXPANDED
+            self.set_folding(new_state)
             e.accept()
         else:
             e.ignore()
 
 
 class Section(QWidget):
-    def __init__(self, folding=None, parent=None):
+    def __init__(self, foldable=None, folding=None, parent=None):
         super(Section, self).__init__(parent=parent)
         self.setObjectName("section")
         self.create_ui()
-        if folding is not None:
-            self.folding = folding
-        else:
-            self.folding = True
+        self.set_foldable(True if foldable is None else foldable)
+        self.set_folding(Folding.COLLAPSED if folding is None else folding)
 
 
     def create_ui(self):
@@ -152,9 +176,12 @@ class Section(QWidget):
         self._title_bar.folding_changed.connect(self.folding_changed)
 
 
-    def on_title_bar_folding_changed(self, checked=None):
+    def on_title_bar_folding_changed(self, folding):
         if self._content is not None:
-            self._content.setVisible(checked)
+            if folding == Folding.EXPANDED:
+                self._content.setVisible(True)
+            else:
+                self._content.setVisible(False)
 
 
     def get_title(self):
@@ -169,17 +196,29 @@ class Section(QWidget):
     title = QProperty(UnicodeType, fget=get_title, fset=set_title)
 
 
+    def get_foldable(self):
+        return self._title_bar.foldable
+
+
+    @QSlot(bool)
+    def set_foldable(self, new_foldable):
+        self._title_bar.foldable = new_foldable
+
+
+    foldable = QProperty(bool, fget=get_foldable, fset=set_foldable)
+
+
     def get_folding(self):
         return self._title_bar.folding
 
 
-    @QSlot(bool)
+    @QSlot(Folding)
     def set_folding(self, new_folding):
         self._title_bar.folding = new_folding
 
 
-    folding_changed = QSignal(bool)
-    folding = QProperty(bool, fget=get_folding, fset=set_folding, notify=folding_changed)
+    folding_changed = QSignal(Folding)
+    folding = QProperty(Folding, fget=get_folding, fset=set_folding, notify=folding_changed)
 
 
     def title_bar(self):
@@ -206,3 +245,4 @@ class Section(QWidget):
             # add new content
             layout = self.layout()
             layout.addWidget(new_content)
+            new_content.setVisible(self.folding == Folding.EXPANDED)
