@@ -39,7 +39,7 @@ def register():
     """
     # add_PYTHONPATH()
 
-    from layer_extra_properties.extension import \
+    from .extension import \
             LayerExtraPropertiesExtension
 
     app = Krita.instance()
@@ -56,7 +56,7 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    from layer_extra_properties.extension import \
+    from .extension import \
             LayerExtraPropertiesExtension
 
     app = Krita.instance()

@@ -48,7 +48,7 @@ def register():
     # add_PYTHONPATH()
     add_search_paths()
 
-    from arc_welding_tool.extension import \
+    from .extension import \
             ArcWeldingToolExtension
 
     app = Krita.instance()
@@ -65,7 +65,7 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    from arc_welding_tool.extension import \
+    from .extension import \
             ArcWeldingToolExtension
 
     app = Krita.instance()

@@ -12,23 +12,19 @@ from PyQt5.QtCore import pyqtProperty as QProperty
 from PyQt5.QtWidgets import \
         QWidget, QFormLayout, QLabel
 
-from .meta_meta import MetaMeta
-from .section import Section
+from .abc_editor_container import AbcEditorContainer
 from .data_editor_mapper import data_editor_mapper
 
 
-class DictEditor(Section, MutableMapping, metaclass=MetaMeta):
+class DictEditor(AbcEditorContainer, MutableMapping):
     def __init__(self, parent=None):
-        Section.__init__(self, parent=parent)
+        AbcEditorContainer.__init__(self, parent=parent)
         self._label_width = 110
 
 
     def create_ui(self):  # super calls this create_ui
-        Section.create_ui(self)  # this calls super create_ui
-        edit_menu = self.menu_bar().addMenu(i18n("Edit"))
-        edit_menu.addAction("Add Field")
-        edit_menu.addAction("Edit Field")
-        edit_menu.addAction("Remove Field")
+        AbcEditorContainer.create_ui(self)  # this calls super create_ui
+
         content = QWidget()
         content.setObjectName("dict_content")
         content.setStyleSheet("""
@@ -87,7 +83,7 @@ class DictEditor(Section, MutableMapping, metaclass=MetaMeta):
                     found = True
             if found:
                 layout.removeRow(row)
-                if isinstance(editor, Section):
+                if isinstance(editor, AbcEditorContainer):
                     editor.title = key
                     editor.setObjectName(key)
                     layout.insertRow(row, editor)
@@ -100,7 +96,7 @@ class DictEditor(Section, MutableMapping, metaclass=MetaMeta):
                     label_widget.setFixedWidth(self._label_width)  # elide right missing...
                 break
         else:
-            if isinstance(editor, Section):
+            if isinstance(editor, AbcEditorContainer):
                 editor.title = key
                 editor.setObjectName(key)
                 layout.addRow(editor)

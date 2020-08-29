@@ -1,13 +1,3 @@
-"""
-
-How to use:
-
-from layer_extra_properties.ui.layer_properties_hook import \
-        LayerPropertiesHook
-
-LayerPropertiesHook.register()
-
-"""
 
 from collections import OrderedDict as oDict
 

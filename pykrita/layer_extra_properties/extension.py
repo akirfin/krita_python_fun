@@ -16,26 +16,25 @@ from krita import Krita, Extension
 from PyQt5.QtCore import \
         QSettings, QTimer
 
-from layer_extra_properties.common.utils_py import \
+from .common.utils_py import \
         first, last, underscore
 
-from layer_extra_properties.common.utils_qt import \
+from .common.utils_qt import \
         find_menu, create_menu, create_action
 
-from layer_extra_properties.common.utils_kis import \
+from .common.utils_kis import \
         write_extension_action_file, read_setting, write_setting
 
-from layer_extra_properties.ui.layer_properties_hook import \
+from .ui.layer_properties_hook import \
         LayerPropertiesHook
 
 
 class LayerExtraPropertiesExtension(Extension):
-    plugin_id = "layer_extra_properties_extension"
     show_layer_extra_properties_setting = "show_layer_extra_properties"
 
     def __init__(self, parent):
         super(LayerExtraPropertiesExtension, self).__init__(parent)
-        self.setObjectName(LayerExtraPropertiesExtension.plugin_id)
+        self.setObjectName("layer_extra_properties_extension")
 
 
     def setup(self):

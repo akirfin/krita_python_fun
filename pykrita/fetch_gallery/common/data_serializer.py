@@ -151,20 +151,26 @@ class DataSerializer(object):
                 return cls_name, coder
 
 
-    def to_dict(self, obj):
+    def to_dict(self, obj, type_hints=True):
         result = None
         cls_name_coder = self.get_coder(obj)
         if cls_name_coder:
             cls_name, coder = cls_name_coder
-            result = self._dict_factory(__type__=cls_name)
-            result.update((self.to_dict(k), self.to_dict(v)) for k, v in coder.to_dict(obj).items())
+            result = self._dict_factory()
+            if type_hints:
+                result["__type__"] = cls_name
+            result.update(
+                    (self.to_dict(k, type_hints=type_hints), self.to_dict(v, type_hints=type_hints))
+                    for k, v in coder.to_dict(obj).items())
             return result
         elif isinstance(obj, (type(None), bool, int, float, UnicodeType, BytesType)):
             return obj
         elif isinstance(obj, Mapping):
-            return self._dict_factory((self.to_dict(k), self.to_dict(v)) for k, v in obj.items())
+            return self._dict_factory(
+                    (self.to_dict(k, type_hints=type_hints), self.to_dict(v, type_hints=type_hints))
+                    for k, v in obj.items())
         elif isinstance(obj, Iterable):
-            return list(self.to_dict(v) for v in obj)
+            return list(self.to_dict(v, type_hints=type_hints) for v in obj)
         raise RuntimeError("Can NOT handle {obj!r}!".format(**locals()))
 
 
@@ -205,12 +211,12 @@ class DataSerializer(object):
                     "registry={registry}").format(**locals())
 
 
-    def dump(self, obj, file_handle):
-        json.dump(self.to_dict(obj), file_handle, indent=2)
+    def dump(self, obj, file_handle, type_hints=True):
+        json.dump(self.to_dict(obj, type_hints=type_hints), file_handle, indent=2)
 
 
-    def dumps(self, obj):
-        return json.dumps(self.to_dict(obj), indent=2)
+    def dumps(self, obj, type_hints=True):
+        return json.dumps(self.to_dict(obj, type_hints=type_hints), indent=2)
 
 
     def load(self, file_handle):
@@ -260,7 +266,7 @@ serializer.register(
         data_cls=bytes,
         from_dict=lambda dct: bytes(base64.b64decode(dct[u"base64"])),
         to_dict=lambda obj: oDict([
-                (u"base64", base64.b64encode(obj))
+                (u"base64", base64.b64encode(obj).decode('ascii'))
                 ]))
 
 

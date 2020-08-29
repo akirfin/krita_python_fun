@@ -44,7 +44,7 @@ def register():
     except:
         raise RuntimeError("Plugin dependency, layer_extra_properties plugin is needed!")
 
-    from camera_layer.extension import \
+    from .extension import \
             CameraLayerExtension
 
     app = Krita.instance()
@@ -61,7 +61,7 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    from camera_layer.extension import \
+    from .extension import \
             CameraLayerExtension
 
     app = Krita.instance()

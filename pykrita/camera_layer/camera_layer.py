@@ -28,16 +28,16 @@ from PyQt5.QtWidgets import \
 from PyQt5.QtMultimedia import \
         QCameraInfo, QCamera, QCameraImageCapture
 
-from camera_layer.common.utils_kis import \
+from .common.utils_kis import \
         find_document_for
 
-from camera_layer.common.utils_py import \
+from .common.utils_py import \
         first, last, underscore
 
-from camera_layer.common.utils_qt import \
+from .common.utils_qt import \
         walk_menu, get_enum_str
 
-from camera_layer.data_types.camera_layer_data import \
+from .data_types import \
         CameraLayerData
 
 from layer_extra_properties.common.data_serializer import \

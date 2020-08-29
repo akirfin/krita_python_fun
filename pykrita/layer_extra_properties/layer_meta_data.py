@@ -10,6 +10,8 @@ set_layer_meta_data(node, "my nice meta dada duu!")
 
 data = get_layer_meta_data(node)
 
+ToDo: move to doublin core title ?
+
 """
 
 from contextlib import contextmanager
@@ -27,10 +29,10 @@ from PyQt5.QtCore import \
 from PyQt5.QtWidgets import \
         QDialog, QApplication, QTextEdit, QLineEdit
 
-from layer_extra_properties.common.utils_py import \
+from .common.utils_py import \
         first, last, UnicodeType, BytesType
 
-from layer_extra_properties.common.utils_kis import \
+from .common.utils_kis import \
         keep_active_node
 
 

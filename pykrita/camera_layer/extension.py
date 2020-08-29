@@ -28,19 +28,19 @@ from PyQt5.QtWidgets import \
 from PyQt5.QtMultimedia import \
         QCameraInfo, QCamera, QCameraImageCapture
 
-from camera_layer.common.utils_kis import \
+from .common.utils_kis import \
         find_document_for, write_extension_action_file, read_setting, write_setting
 
-from camera_layer.common.utils_py import \
+from .common.utils_py import \
         first, last, underscore
 
-from camera_layer.common.utils_qt import \
+from .common.utils_qt import \
         find_menu, create_menu, create_action
 
-from camera_layer.camera_layer import \
+from .camera_layer import \
         CameraLayer
 
-from camera_layer.data_types.camera_layer_data import \
+from .data_types import \
         CameraLayerData
 
 
@@ -49,11 +49,10 @@ class CameraLayerExtension(Extension):
     Add layer type to Krita.
     (this NOT official way to add layer types.)
     """
-    plugin_id = "camera_layer_extension"    
 
     def __init__(self, parent):
         super(CameraLayerExtension, self).__init__(parent)
-        self.setObjectName(CameraLayerExtension.plugin_id)
+        self.setObjectName("camera_layer_extension")
         self._camera_layers = list()  # [(node, camera_layer), ...]
 
 

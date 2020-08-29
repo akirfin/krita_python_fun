@@ -18,10 +18,10 @@ from PyQt5.QtWidgets import \
         QScrollArea, QWidget, QFrame, QFormLayout, QLabel
 
 from .data_editors import \
-        MetaMeta, Section, data_editor_mapper
+        AbcEditorContainer, data_editor_mapper
 
 
-class LayerExtraPropertiesContainer(Section, MutableMapping, metaclass=MetaMeta):
+class LayerExtraPropertiesContainer(AbcEditorContainer, MutableMapping):
     """
     Scroll area containing data widgets.
 
@@ -38,17 +38,13 @@ class LayerExtraPropertiesContainer(Section, MutableMapping, metaclass=MetaMeta)
         - has data property for getting / setting data_object
     """
     def __init__(self, parent=None):
-        Section.__init__(self, foldable=False, parent=parent)
+        AbcEditorContainer.__init__(self, foldable=False, parent=parent)
         self.setObjectName("layer_extra_properties_container")
         self._label_width = 110
 
 
     def create_ui(self):  # super calls this create_ui
-        Section.create_ui(self)  # this calls super create_ui
-        edit_menu = self.menu_bar().addMenu(i18n("Edit"))
-        edit_menu.addAction(i18n("Add Field"))
-        edit_menu.addAction(i18n("Edit Field"))
-        edit_menu.addAction(i18n("Remove Field"))
+        AbcEditorContainer.create_ui(self)  # this calls super create_ui
 
         content = QScrollArea()
         content.setBackgroundRole(QPalette.Window)
@@ -62,7 +58,7 @@ class LayerExtraPropertiesContainer(Section, MutableMapping, metaclass=MetaMeta)
         self._scroll_content_layout = QFormLayout()
         # self._scroll_content_layout.setAlignment(Qt.AlignTop)
         # self._scroll_content_layout.setSpacing(3)
-        self._scroll_content_layout.setContentsMargins(0, 0, 0, 0)
+        self._scroll_content_layout.setContentsMargins(40, 10, 4, 10)
         scroll_content.setLayout(self._scroll_content_layout)
         # scroll_content.setContentsMargins(10, 10, 4, 10)
         self.set_content(content)
@@ -112,7 +108,7 @@ class LayerExtraPropertiesContainer(Section, MutableMapping, metaclass=MetaMeta)
                     found = True
             if found:
                 layout.removeRow(row)
-                if isinstance(editor, Section):
+                if isinstance(editor, AbcEditorContainer):
                     editor.title = key
                     editor.setObjectName(key)
                     layout.insertRow(row, editor)
@@ -125,7 +121,7 @@ class LayerExtraPropertiesContainer(Section, MutableMapping, metaclass=MetaMeta)
                     label_widget.setFixedWidth(self._label_width)  # elide right missing...
                 break
         else:
-            if isinstance(editor, Section):
+            if isinstance(editor, AbcEditorContainer):
                 editor.title = key
                 editor.setObjectName(key)
                 layout.addRow(editor)

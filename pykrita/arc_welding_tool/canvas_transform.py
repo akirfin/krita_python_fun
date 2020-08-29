@@ -14,10 +14,10 @@ from PyQt5.QtGui import \
 from PyQt5.QtWidgets import \
         QWidget, QMdiArea, QMdiSubWindow, QAbstractScrollArea
 
-from arc_welding_tool.common.utils_py import \
+from .common.utils_py import \
         first, last
 
-from arc_welding_tool.common.utils_qt import \
+from .common.utils_qt import \
         walk_qobject_ancestors
 
 

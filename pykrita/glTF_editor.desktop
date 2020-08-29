@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type = Service
+ServiceTypes = Krita/PythonPlugin
+X-KDE-Library = glTF_editor
+X-Python-2-Compatible = false
+X-Krita-Manual = readme.md
+Dependency = layer_meta_data
+Name = Aki: glTF Editor
+Comment = Experimental plugin

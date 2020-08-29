@@ -19,7 +19,7 @@ from camera_layer.common.utils_kis import \
 from camera_layer.camera_layer import \
         CameraLayer
 
-from camera_layer.data_types.camera_layer_data import \
+from camera_layer.data_types import \
         CameraLayerData
 
 

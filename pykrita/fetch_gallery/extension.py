@@ -17,25 +17,24 @@ from krita import Krita, Extension
 from PyQt5.QtCore import \
         QSettings, QTimer
 
-from fetch_gallery.common.utils_py import \
+from .common.utils_py import \
         first, last, underscore
 
-from fetch_gallery.common.utils_qt import \
+from .common.utils_qt import \
         fetch_qimage_from_url, find_menu, create_menu, create_action
 
-from fetch_gallery.common.utils_kis import \
+from .common.utils_kis import \
         create_document_from_qimage, write_extension_action_file, read_setting, write_setting
 
 
 class FetchGalleryExtension(Extension):
-    plugin_id = "fetch_gallery_extension"
     gallery_url_setting = "gallery_url"
     load_limit_setting = "load_limit"
     image_element_re_setting = "image_element_re"
 
     def __init__(self, parent):
         super(FetchGalleryExtension, self).__init__(parent)
-        self.setObjectName(FetchGalleryExtension.plugin_id)
+        self.setObjectName("fetch_gallery_extension")
 
 
     def setup(self):

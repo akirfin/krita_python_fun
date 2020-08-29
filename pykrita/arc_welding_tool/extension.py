@@ -13,16 +13,16 @@ from krita import Krita, Extension
 from PyQt5.QtCore import \
         QSettings, QTimer, QRect
 
-from arc_welding_tool.common.utils_py import \
+from .common.utils_py import \
         first, last, underscore
 
-from arc_welding_tool.common.utils_qt import \
+from .common.utils_qt import \
         find_menu, create_menu, create_action
 
-from layer_extra_properties.common.utils_kis import \
+from .common.utils_kis import \
         write_extension_action_file, read_setting, write_setting
 
-from arc_welding_tool.canvas_transform import \
+from .canvas_transform import \
         get_canvas_transform, get_canvas_qcanvas
 
 from arc_welding_tool import \
@@ -34,11 +34,10 @@ class ArcWeldingToolExtension(Extension):
     Add tool to Krita.
     (this NOT official way to add new tools.)
     """
-    plugin_id = "arc_welding_tool_extension"
 
     def __init__(self, parent):
         super(ArcWeldingToolExtension, self).__init__(parent)
-        self.objectName(ArcWeldingToolExtension.plugin_id)
+        self.objectName("arc_welding_tool_extension")
 
 
     def setup(self):

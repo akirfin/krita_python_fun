@@ -15,9 +15,7 @@ try:
 except:
     from collections import Mapping, Iterable
 
-from .section import Section
-# from .dict_editor import DictEditor
-# from .list_editor import ListEditor
+from .abc_editor_container import AbcEditorContainer
 
 
 class DataEditorMapper(object):
@@ -37,8 +35,17 @@ class DataEditorMapper(object):
         self._registry = oDict()
 
 
-    def register(self, data_type, data_editor_type):
-        self._registry[data_type] = data_editor_type
+    def __len__(self):
+        return len(self._registry)
+
+
+    def __iter__(self):
+        for k_v in self._registry.items():
+            yield k_v
+
+
+    def register(self, data_type, editor_type):
+        self._registry[data_type] = editor_type
 
 
     def create_editor(self, data, title=None):
@@ -46,22 +53,22 @@ class DataEditorMapper(object):
         import layer_extra_properties.ui.data_editors.list_editor as le
 
         data_type = type(data)
-        data_editor_type = None
+        editor_type = None
 
         if data_type in self._registry:
-            data_editor_type = self._registry[data_type]
+            editor_type = self._registry[data_type]
         elif issubclass(data_type, Mapping):
             # generic Mapping type
-            data_editor_type = de.DictEditor
+            editor_type = de.DictEditor
         elif issubclass(data_type, Iterable):
             # generic Iterable type
-            data_editor_type = le.ListEditor
+            editor_type = le.ListEditor
 
-        if data_editor_type is not None:
-            data_editor = data_editor_type()
+        if editor_type is not None:
+            data_editor = editor_type()
             data_editor.data = data
             if title is not None:
-                if isinstance(data_editor, Section):
+                if isinstance(data_editor, AbcEditorContainer):
                     data_editor.title = title
                 data_editor.setObjectName(title)
             return data_editor

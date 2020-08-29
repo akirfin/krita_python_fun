@@ -39,7 +39,7 @@ def register():
     """
     # add_PYTHONPATH()
 
-    from fetch_gallery.extension import \
+    from .extension import \
             FetchGalleryExtension
 
     app = Krita.instance()
@@ -56,7 +56,7 @@ def unregister():
     Remove extensions & dockers from Krita.
     Unload plugin modules from python ???
     """
-    from fetch_gallery.extension import \
+    from .extension import \
             FetchGalleryExtension
 
     app = Krita.instance()

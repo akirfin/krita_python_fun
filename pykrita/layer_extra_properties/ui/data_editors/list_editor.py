@@ -12,24 +12,20 @@ from PyQt5.QtCore import pyqtProperty as QProperty
 from PyQt5.QtWidgets import \
         QWidget, QFormLayout, QLabel
 
-from .meta_meta import MetaMeta
-from .section import Section
+from .abc_editor_container import AbcEditorContainer
 
 from .data_editor_mapper import data_editor_mapper
 
 
-class ListEditor(Section, MutableSequence, metaclass=MetaMeta):
+class ListEditor(AbcEditorContainer, MutableSequence):
     def __init__(self, parent=None):
-        Section.__init__(self, parent=parent)
+        AbcEditorContainer.__init__(self, parent=parent)
         self._label_width = 110
 
 
     def create_ui(self):  # super calls this create_ui
-        Section.create_ui(self)  # this calls super create_ui
-        edit_menu = self.menu_bar().addMenu(i18n("Edit"))
-        edit_menu.addAction("Add Field")
-        edit_menu.addAction("Edit Field")
-        edit_menu.addAction("Remove Field")
+        AbcEditorContainer.create_ui(self)  # this calls super create_ui
+
         content = QWidget()
         content.setObjectName("list_content")
         content.setStyleSheet("""
@@ -41,6 +37,7 @@ class ListEditor(Section, MutableSequence, metaclass=MetaMeta):
         self._content_layout = QFormLayout()
         self._content_layout.setContentsMargins(40, 10, 4, 10)
         content.setLayout(self._content_layout)
+
         self.set_content(content)
 
 
@@ -76,7 +73,7 @@ class ListEditor(Section, MutableSequence, metaclass=MetaMeta):
         if 0 <= index < layout.rowCount():
             del self[index]
             nice_text = self.format_index(index)
-            if isinstance(editor, Section):
+            if isinstance(editor, AbcEditorContainer):
                 editor.title = nice_text
                 layout.insertRow(index, editor)
             else:
@@ -104,7 +101,7 @@ class ListEditor(Section, MutableSequence, metaclass=MetaMeta):
     def insert(self, index, editor):
         layout = self._content_layout
         nice_text = self.format_index(index)
-        if isinstance(editor, Section):
+        if isinstance(editor, AbcEditorContainer):
             editor.title = nice_text
             layout.insertRow(index, editor)
         else:
@@ -126,7 +123,7 @@ class ListEditor(Section, MutableSequence, metaclass=MetaMeta):
                 label_item = layout.itemAt(index, QFormLayout.LabelRole)
                 label_widget = label_item.widget()
             nice_text = self.format_index(index)
-            if isinstance(label_widget, Section):
+            if isinstance(label_widget, AbcEditorContainer):
                 label_widget.title = nice_text
             else:
                 label_widget.setText(nice_text)

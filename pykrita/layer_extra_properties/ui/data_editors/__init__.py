@@ -13,6 +13,5 @@ from .float_editor import FloatEditor
 from .str_editor import StrEditor
 from .bytes_editor import BytesEditor
 
-from .section import Section
-from .data_editor_mapper import data_editor_mapper
-from .meta_meta import MetaMeta
+from .abc_editor_container import AbcEditorContainer
+from .data_editor_mapper import data_editor_mapper  # shadows ?
