@@ -49,14 +49,18 @@ JSON tree of user defined settings.
 (note: Krita bug in DublinCore.description, it is NOT saved!)</p>
 <hr>
 
+<img src="./pykrita/glTF_editor/resources/GlTF_Official_Logo.svg"/>
+<h3>glTF Editor</h3>
+<p>Realtime model viewer with textures as krita layers + UV map overlay. Can be used to render 3d scene image to layer. Lighting Plugin needed (glTF has light issues...) No 3D painting support!
+</p>
+<hr>
+
 <h3>future ideas</h3>
 <pre>
 Krita Shelfs:
   - place scripts, actions with settings, filepaths, then just click or drag & drop to target
 OpenStreetMap layer:
   - fetch any place on earth!
-glTF layer:
-  - show glTF in layer or use layers as textures?
 PixFika layer:
   - Shadertoy + glsl sandbox + PixFika compatible layer
 Tutor:
