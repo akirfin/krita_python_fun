@@ -1,0 +1,4 @@
+
+class TextureInfo(object):
+    """
+    """

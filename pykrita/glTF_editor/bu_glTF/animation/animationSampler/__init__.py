@@ -1,0 +1,4 @@
+
+class AnimationSampler(object):
+    """
+    """

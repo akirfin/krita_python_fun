@@ -1,0 +1,4 @@
+
+class NormalTextureInfo(object):
+    """
+    """

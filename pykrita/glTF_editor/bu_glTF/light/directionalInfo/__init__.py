@@ -1,0 +1,3 @@
+class DirectionalLight(object):
+    """
+    """

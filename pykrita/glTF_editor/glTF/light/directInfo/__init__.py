@@ -1,3 +1,0 @@
-class DirectInfo(object):
-    """
-    """
